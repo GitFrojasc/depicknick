@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi canasto — dePicknick</title>
+  <style>
+    :root {
+      --verde-oscuro: #2d5a27; --verde-medio: #4a7c59; --verde-claro: #8db87a;
+      --crema: #f5f0e8; --crema-oscuro: #e8e0d0; --terracota: #c4622d;
+      --terracota-claro: #e8835a; --marron: #5c3d2e; --texto: #2a2a2a; --gris: #666;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Georgia', serif; color: var(--texto); background: var(--crema); }
+
+    nav {
+      background: var(--verde-oscuro); padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px; position: sticky; top: 0; z-index: 100;
+    }
+    .logo { font-size: 22px; color: var(--crema); letter-spacing: 2px; font-style: italic; text-decoration: none; }
+    .logo span { color: var(--verde-claro); font-style: normal; font-weight: bold; }
+    .nav-volver {
+      color: var(--crema-oscuro); text-decoration: none;
+      font-family: Arial, sans-serif; font-size: 13px; transition: color 0.2s;
+    }
+    .nav-volver:hover { color: var(--verde-claro); }
+
+    .page { max-width: 760px; margin: 0 auto; padding: 3rem 2rem; }
+
+    h1 { font-size: 2rem; color: var(--marron); margin-bottom: 2rem; }
+
+    /* ── ITEMS ── */
+    .item-lista { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
+
+    .item-row {
+      background: white; border-radius: 14px;
+      padding: 1.2rem 1.4rem;
+      display: flex; align-items: center; gap: 1.2rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    }
+    .item-emoji { font-size: 2.2rem; flex-shrink: 0; }
+    .item-info { flex: 1; }
+    .item-info h3 { font-size: 1rem; color: var(--marron); margin-bottom: 3px; }
+    .item-info .item-productor {
+      font-family: Arial, sans-serif; font-size: 11px;
+      color: var(--verde-medio); letter-spacing: 0.5px;
+    }
+    .item-controles {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .btn-ctrl {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 1.5px solid var(--crema-oscuro);
+      background: var(--crema); cursor: pointer;
+      font-size: 16px; display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.2s;
+    }
+    .btn-ctrl:hover { border-color: var(--verde-medio); }
+    .item-cantidad {
+      font-family: Arial, sans-serif; font-size: 15px;
+      font-weight: bold; min-width: 20px; text-align: center;
+    }
+    .item-subtotal {
+      font-family: Arial, sans-serif; font-size: 15px;
+      font-weight: bold; color: var(--marron); min-width: 90px; text-align: right;
+    }
+
+    /* ── RESUMEN ── */
+    .resumen {
+      background: white; border-radius: 16px;
+      padding: 1.8rem; box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    }
+    .resumen-fila {
+      display: flex; justify-content: space-between;
+      font-family: Arial, sans-serif; font-size: 14px; color: var(--gris);
+      padding: 8px 0; border-bottom: 1px solid var(--crema-oscuro);
+    }
+    .resumen-total {
+      display: flex; justify-content: space-between;
+      padding: 1rem 0 1.4rem;
+      font-size: 1.3rem; font-weight: bold; color: var(--marron);
+    }
+    .btn-pagar {
+      width: 100%; background: var(--terracota); color: white;
+      border: none; padding: 16px; border-radius: 30px;
+      font-family: Arial, sans-serif; font-size: 16px; font-weight: bold;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .btn-pagar:hover { background: var(--terracota-claro); }
+    .btn-seguir {
+      display: block; text-align: center; margin-top: 1rem;
+      font-family: Arial, sans-serif; font-size: 13px;
+      color: var(--verde-medio); text-decoration: none;
+    }
+    .btn-seguir:hover { text-decoration: underline; }
+
+    /* ── VACÍO ── */
+    .carrito-vacio {
+      text-align: center; padding: 5rem 2rem;
+      font-family: Arial, sans-serif; color: var(--gris);
+    }
+    .carrito-vacio p { font-size: 15px; margin: 1rem 0 2rem; }
+    .btn-ir {
+      display: inline-block; background: var(--verde-oscuro); color: white;
+      padding: 12px 28px; border-radius: 24px; text-decoration: none;
+      font-family: Arial, sans-serif; font-size: 14px; font-weight: bold;
+    }
+
+    footer {
+      background: var(--marron); color: rgba(255,255,255,0.7);
+      text-align: center; padding: 2rem;
+      font-family: Arial, sans-serif; font-size: 13px; margin-top: 4rem;
+    }
+    footer a { color: var(--verde-claro); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">de<span>Picknick</span></a>
+  <a href="javascript:history.back()" class="nav-volver">← Seguir comprando</a>
+</nav>
+
+<div class="page">
+  <h1>🧺 Mi canasto</h1>
+
+  {% if items %}
+
+  <div class="item-lista">
+    {% for item in items %}
+    <div class="item-row">
+      <div class="item-emoji">{{ item.producto.categoria.emoji }}</div>
+      <div class="item-info">
+        <h3>{{ item.producto.nombre }}</h3>
+        {% if item.producto.productor %}
+        <div class="item-productor">{{ item.producto.productor.nombre }}</div>
+        {% endif %}
+        <div style="font-family:Arial,sans-serif;font-size:12px;color:var(--gris);margin-top:2px;">
+          ${{ item.producto.precio|floatformat:0 }} / {{ item.producto.unidad }}
+        </div>
+      </div>
+      <div class="item-controles">
+        <form method="POST" action="/carrito/quitar/{{ item.producto.pk }}/">
+          {% csrf_token %}
+          <button type="submit" class="btn-ctrl">−</button>
+        </form>
+        <span class="item-cantidad">{{ item.cantidad }}</span>
+        <form method="POST" action="/carrito/agregar/{{ item.producto.pk }}/">
+          {% csrf_token %}
+          <input type="hidden" name="siguiente" value="/carrito/">
+          <button type="submit" class="btn-ctrl">+</button>
+        </form>
+      </div>
+      <div class="item-subtotal">${{ item.subtotal|floatformat:0 }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="resumen">
+    {% for item in items %}
+    <div class="resumen-fila">
+      <span>{{ item.producto.nombre }} × {{ item.cantidad }}</span>
+      <span>${{ item.subtotal|floatformat:0 }}</span>
+    </div>
+    {% endfor %}
+    <div class="resumen-total">
+      <span>Total</span>
+      <span>${{ total|floatformat:0 }}</span>
+    </div>
+    <button class="btn-pagar" disabled title="Próximamente">Proceder al pago — Próximamente</button>
+    <a href="/" class="btn-seguir">← Seguir explorando canastos</a>
+  </div>
+
+  {% else %}
+  <div class="carrito-vacio">
+    <span style="font-size:4rem">🧺</span>
+    <p>Tu canasto está vacío. Agrega productos desde cualquier canasto.</p>
+    <a href="/#canastos" class="btn-ir">Ver los canastos</a>
+  </div>
+  {% endif %}
+</div>
+
+<footer>
+  <p>dePicknick · Del campo al canasto · <a href="/">Inicio</a></p>
+</footer>
+
+</body>
+</html>

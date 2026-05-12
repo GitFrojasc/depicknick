@@ -182,9 +182,58 @@
     }
     .producto-footer {
       display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: auto;
+    }
+    .producto-footer-top {
+      display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-top: auto;
+    }
+    .btn-agregar {
+      width: 100%;
+      background: var(--verde-oscuro);
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 20px;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-agregar:hover { background: var(--verde-medio); }
+    .btn-agregar.en-carrito {
+      background: var(--terracota);
+    }
+    .btn-agregar.en-carrito:hover { background: var(--terracota-claro); }
+    .nav-carrito {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--terracota);
+      color: white;
+      text-decoration: none;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      padding: 7px 16px;
+      border-radius: 20px;
+      transition: background 0.2s;
+    }
+    .nav-carrito:hover { background: var(--terracota-claro); }
+    .carrito-badge {
+      background: white;
+      color: var(--terracota);
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: bold;
     }
     .producto-precio {
       font-size: 1.2rem;
@@ -235,7 +284,13 @@
 
 <nav>
   <a href="/" class="logo">de<span>Picknick</span></a>
-  <a href="/#canastos" class="nav-volver">← Volver a canastos</a>
+  <div style="display:flex;align-items:center;gap:1.5rem;">
+    <a href="/#canastos" class="nav-volver">← Canastos</a>
+    <a href="/carrito/" class="nav-carrito">
+      🧺 Mi canasto
+      {% if carrito_count %}<span class="carrito-badge">{{ carrito_count }}</span>{% endif %}
+    </a>
+  </div>
 </nav>
 
 <section class="hero-canasto">
@@ -267,13 +322,26 @@
         <p class="producto-historia">"{{ p.historia|truncatewords:20 }}"</p>
         {% endif %}
         <div class="producto-footer">
-          <div class="producto-precio">
-            ${{ p.precio|floatformat:0 }}
-            <span>/ {{ p.unidad }}</span>
+          <div class="producto-footer-top">
+            <div class="producto-precio">
+              ${{ p.precio|floatformat:0 }}
+              <span>/ {{ p.unidad }}</span>
+            </div>
+            {% if p.productor %}
+            <div class="producto-productor">{{ p.productor.nombre }}</div>
+            {% endif %}
           </div>
-          {% if p.productor %}
-          <div class="producto-productor">{{ p.productor.nombre }}</div>
-          {% endif %}
+          <form method="POST" action="/carrito/agregar/{{ p.pk }}/">
+            {% csrf_token %}
+            <input type="hidden" name="siguiente" value="/canasto/{{ tipo }}/">
+            <button type="submit" class="btn-agregar {% if p.pk|stringformat:'s' in carrito %}en-carrito{% endif %}">
+              {% if p.pk|stringformat:'s' in carrito %}
+                ✓ En el canasto ({{ carrito|default_if_none:'' }})
+              {% else %}
+                + Agregar al canasto
+              {% endif %}
+            </button>
+          </form>
         </div>
       </div>
     </div>

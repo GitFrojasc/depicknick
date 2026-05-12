@@ -21,5 +21,8 @@ from tienda import views
 urlpatterns = [
     path('', views.inicio, name='inicio'),
     path('canasto/<str:tipo>/', views.canasto_detalle, name='canasto'),
+    path('carrito/', views.ver_carrito, name='ver_carrito'),
+    path('carrito/agregar/<int:producto_id>/', views.agregar_al_carrito, name='agregar_carrito'),
+    path('carrito/quitar/<int:producto_id>/', views.quitar_del_carrito, name='quitar_carrito'),
     path('admin/', admin.site.urls),
 ]
