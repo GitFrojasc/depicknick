@@ -20,5 +20,6 @@ from tienda import views
 
 urlpatterns = [
     path('', views.inicio, name='inicio'),
+    path('canasto/<str:tipo>/', views.canasto_detalle, name='canasto'),
     path('admin/', admin.site.urls),
 ]

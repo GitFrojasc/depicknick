@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ canasto.nombre }} — dePicknick</title>
+  <style>
+    :root {
+      --verde-oscuro: #2d5a27;
+      --verde-medio: #4a7c59;
+      --verde-claro: #8db87a;
+      --crema: #f5f0e8;
+      --crema-oscuro: #e8e0d0;
+      --terracota: #c4622d;
+      --terracota-claro: #e8835a;
+      --marron: #5c3d2e;
+      --texto: #2a2a2a;
+      --gris: #666;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Georgia', serif; color: var(--texto); background: var(--crema); }
+
+    /* ── NAV ── */
+    nav {
+      background: var(--verde-oscuro);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo { font-size: 22px; color: var(--crema); letter-spacing: 2px; font-style: italic; text-decoration: none; }
+    .logo span { color: var(--verde-claro); font-style: normal; font-weight: bold; }
+    .nav-volver {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--crema-oscuro);
+      text-decoration: none;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      letter-spacing: 1px;
+      transition: color 0.2s;
+    }
+    .nav-volver:hover { color: var(--verde-claro); }
+
+    /* ── HERO CANASTO ── */
+    .hero-canasto {
+      padding: 4rem 2rem 3rem;
+      text-align: center;
+      background: var(--crema-oscuro);
+      border-bottom: 1px solid var(--crema-oscuro);
+    }
+    .hero-emoji {
+      font-size: 5rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin-bottom: 1.5rem;
+    }
+    .hero-tag {
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--verde-medio);
+      margin-bottom: 0.6rem;
+    }
+    .hero-canasto h1 { font-size: 2.5rem; color: var(--marron); margin-bottom: 0.8rem; }
+    .hero-canasto p {
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      color: var(--gris);
+      max-width: 500px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ── GRID PRODUCTOS ── */
+    .productos-section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3.5rem 2rem;
+    }
+    .productos-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .productos-count {
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      color: var(--gris);
+    }
+    .productos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* ── TARJETA PRODUCTO ── */
+    .producto-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+    }
+    .producto-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 28px rgba(0,0,0,0.11);
+    }
+    .producto-imagen {
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      background: var(--crema-oscuro);
+      position: relative;
+    }
+    .badge-destacado {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--terracota);
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 10px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+    .badge-certificado {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: var(--verde-oscuro);
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 10px;
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+    .producto-body {
+      padding: 1.4rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .producto-body h3 { font-size: 1.1rem; color: var(--marron); margin-bottom: 6px; }
+    .producto-desc {
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      color: var(--gris);
+      line-height: 1.5;
+      margin-bottom: 0.8rem;
+      flex: 1;
+    }
+    .producto-historia {
+      font-family: Georgia, serif;
+      font-size: 12px;
+      color: var(--verde-medio);
+      font-style: italic;
+      line-height: 1.5;
+      border-left: 3px solid var(--verde-claro);
+      padding-left: 10px;
+      margin-bottom: 1.2rem;
+    }
+    .producto-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+    }
+    .producto-precio {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--marron);
+    }
+    .producto-precio span {
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      color: var(--gris);
+      font-weight: normal;
+      margin-left: 4px;
+    }
+    .producto-productor {
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      color: var(--verde-medio);
+      letter-spacing: 0.5px;
+    }
+
+    /* ── VACÍO ── */
+    .sin-productos {
+      text-align: center;
+      padding: 5rem 2rem;
+      color: var(--gris);
+      font-family: Arial, sans-serif;
+    }
+    .sin-productos p { font-size: 15px; margin-top: 1rem; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--marron);
+      color: rgba(255,255,255,0.7);
+      text-align: center;
+      padding: 2rem;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+    }
+    footer a { color: var(--verde-claro); text-decoration: none; }
+
+    @media (max-width: 600px) {
+      .hero-canasto h1 { font-size: 1.8rem; }
+      .productos-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">de<span>Picknick</span></a>
+  <a href="/#canastos" class="nav-volver">← Volver a canastos</a>
+</nav>
+
+<section class="hero-canasto">
+  <div class="hero-emoji" style="background: {{ canasto.color }}">{{ canasto.emoji }}</div>
+  <div class="hero-tag">{{ canasto.tag }}</div>
+  <h1>{{ canasto.nombre }}</h1>
+  <p>{{ canasto.descripcion }}</p>
+</section>
+
+<section class="productos-section">
+  <div class="productos-header">
+    <h2 style="font-size:1.3rem; color:var(--marron);">Productos disponibles</h2>
+    <span class="productos-count">{{ productos.count }} producto{% if productos.count != 1 %}s{% endif %}</span>
+  </div>
+
+  {% if productos %}
+  <div class="productos-grid">
+    {% for p in productos %}
+    <div class="producto-card">
+      <div class="producto-imagen">
+        {{ p.categoria.emoji }}
+        {% if p.destacado %}<span class="badge-destacado">Destacado</span>{% endif %}
+        {% if p.certificado %}<span class="badge-certificado">✓ Certificado</span>{% endif %}
+      </div>
+      <div class="producto-body">
+        <h3>{{ p.nombre }}</h3>
+        <p class="producto-desc">{{ p.descripcion }}</p>
+        {% if p.historia %}
+        <p class="producto-historia">"{{ p.historia|truncatewords:20 }}"</p>
+        {% endif %}
+        <div class="producto-footer">
+          <div class="producto-precio">
+            ${{ p.precio|floatformat:0 }}
+            <span>/ {{ p.unidad }}</span>
+          </div>
+          {% if p.productor %}
+          <div class="producto-productor">{{ p.productor.nombre }}</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="sin-productos">
+    <span style="font-size:3rem">🌱</span>
+    <p>Estamos seleccionando los mejores productos para este canasto. Vuelve pronto.</p>
+  </div>
+  {% endif %}
+</section>
+
+<footer>
+  <p>dePicknick · Del campo al canasto · <a href="/">Volver al inicio</a></p>
+</footer>
+
+</body>
+</html>
