@@ -531,6 +531,97 @@
       .nav-links { display: none; }
       .hero h1 { font-size: 2rem; }
     }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.activo { display: flex; }
+    .modal {
+      background: white;
+      border-radius: 20px;
+      padding: 2.5rem;
+      max-width: 500px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    .modal-cerrar {
+      position: absolute;
+      top: 1rem;
+      right: 1.2rem;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--gris);
+    }
+    .modal h3 { font-size: 1.4rem; color: var(--marron); margin-bottom: 0.4rem; }
+    .modal .modal-sub { font-family: Arial, sans-serif; font-size: 13px; color: var(--gris); margin-bottom: 1.8rem; }
+    .form-grupo { margin-bottom: 1.1rem; }
+    .form-grupo label {
+      display: block;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--verde-oscuro);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 5px;
+    }
+    .form-grupo input,
+    .form-grupo select,
+    .form-grupo textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid var(--crema-oscuro);
+      border-radius: 10px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      color: var(--texto);
+      background: var(--crema);
+      transition: border-color 0.2s;
+      resize: none;
+    }
+    .form-grupo input:focus,
+    .form-grupo select:focus,
+    .form-grupo textarea:focus { outline: none; border-color: var(--verde-medio); background: white; }
+    .form-grupo .error { font-family: Arial, sans-serif; font-size: 11px; color: var(--terracota); margin-top: 4px; }
+    .btn-enviar {
+      width: 100%;
+      background: var(--verde-oscuro);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 30px;
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: background 0.2s;
+    }
+    .btn-enviar:hover { background: var(--verde-medio); }
+    .banner-exito {
+      background: #e8f5e2;
+      border: 1.5px solid var(--verde-claro);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      color: var(--verde-oscuro);
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 2rem;
+    }
   </style>
 </head>
 <body>
@@ -598,7 +689,7 @@
           </div>
         </div>
 
-        <a href="#" class="canasto-cta">Suscribirme a mi despensa</a>
+        <button onclick="abrirModal()" class="canasto-cta" style="border:none;cursor:pointer;">Suscribirme a mi despensa</button>
       </div>
     </div>
 
@@ -716,6 +807,37 @@
   </div>
 </section>
 
+<!-- ════ MODAL SUSCRIPCIÓN ════ -->
+<div class="modal-overlay {% if modal_abierto %}activo{% endif %}" id="modalSuscripcion">
+  <div class="modal">
+    <button class="modal-cerrar" onclick="cerrarModal()">✕</button>
+    <h3>🧺 Suscríbete a La Despensa</h3>
+    <p class="modal-sub">Te traemos tu canasto cada semana. Recogemos el anterior y el tarro de orgánicos.</p>
+
+    {% if suscrito %}
+    <div class="banner-exito">
+      ✅ ¡Listo! Te contactaremos pronto para coordinar tu primera entrega.
+    </div>
+    {% endif %}
+
+    <form method="POST" action="/">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="form-grupo">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+          {% for error in field.errors %}
+            <div class="error">{{ error }}</div>
+          {% endfor %}
+        {% endif %}
+      </div>
+      {% endfor %}
+      <button type="submit" class="btn-enviar">Quiero mi despensa →</button>
+    </form>
+  </div>
+</div>
+
 <!-- ════ FOOTER ════ -->
 <footer id="contacto">
   <div class="footer-logo">dePicknick</div>
@@ -732,5 +854,21 @@
   <p style="font-size:11px; opacity:0.5;">© 2026 dePicknick · Todos los derechos reservados</p>
 </footer>
 
+<script>
+  function abrirModal() {
+    document.getElementById('modalSuscripcion').classList.add('activo');
+    document.body.style.overflow = 'hidden';
+  }
+  function cerrarModal() {
+    document.getElementById('modalSuscripcion').classList.remove('activo');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('modalSuscripcion').addEventListener('click', function(e) {
+    if (e.target === this) cerrarModal();
+  });
+  {% if modal_abierto or suscrito %}
+  abrirModal();
+  {% endif %}
+</script>
 </body>
 </html>
