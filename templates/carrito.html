@@ -113,6 +113,20 @@
       font-family: Arial, sans-serif; font-size: 13px; margin-top: 4rem;
     }
     footer a { color: var(--verde-claro); text-decoration: none; }
+
+    @media (max-width: 600px) {
+      nav { padding: 0 1rem; }
+      .page { padding: 2rem 1rem; }
+      h1 { font-size: 1.6rem; }
+      .item-row {
+        flex-wrap: wrap;
+        gap: 0.8rem;
+      }
+      .item-info { flex: 1 1 60%; }
+      .item-subtotal { flex: 1 1 auto; text-align: right; font-size: 14px; }
+      .item-controles { flex: 1 1 100%; justify-content: flex-end; }
+      .resumen-total { font-size: 1.1rem; }
+    }
   </style>
 </head>
 <body>
