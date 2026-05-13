@@ -1,5 +1,8 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.http import HttpResponse
 from import_export import resources, fields
 from import_export.admin import ImportExportModelAdmin
 from import_export.widgets import ForeignKeyWidget
@@ -35,11 +38,50 @@ class ItemPedidoInline(admin.TabularInline):
     readonly_fields = ('subtotal',)
 
 
+def _contexto_invitacion(productor, request):
+    return {
+        'productor': productor,
+        'productos': Producto.objects.filter(productor=productor).select_related('categoria'),
+        'request': request,
+    }
+
+
 @admin.register(Productor)
 class ProductorAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'ubicacion', 'email', 'telefono', 'activo')
     list_filter = ('activo',)
     search_fields = ('nombre', 'ubicacion', 'email')
+    actions = ['enviar_invitacion', 'previsualizar_invitacion']
+
+    @admin.action(description='Enviar correo de invitación a productores seleccionados')
+    def enviar_invitacion(self, request, queryset):
+        enviados, sin_email = 0, 0
+        for productor in queryset:
+            if not productor.email:
+                sin_email += 1
+                continue
+            ctx = _contexto_invitacion(productor, request)
+            html = render_to_string('emails/invitacion_productor.html', ctx)
+            msg = EmailMultiAlternatives(
+                subject=f'Tu marca en dePicknick — {productor.nombre}',
+                body=f'Hola {productor.nombre}, te presentamos tu perfil en dePicknick.',
+                from_email='hola@depicknick.com',
+                to=[productor.email],
+            )
+            msg.attach_alternative(html, 'text/html')
+            msg.send(fail_silently=True)
+            enviados += 1
+        if enviados:
+            self.message_user(request, f'{enviados} correo(s) enviado(s) correctamente.')
+        if sin_email:
+            self.message_user(request, f'{sin_email} productor(es) sin email configurado — no se les envió.', level='warning')
+
+    @admin.action(description='Previsualizar correo (abre en el navegador)')
+    def previsualizar_invitacion(self, request, queryset):
+        productor = queryset.first()
+        ctx = _contexto_invitacion(productor, request)
+        html = render_to_string('emails/invitacion_productor.html', ctx)
+        return HttpResponse(html)
 
 
 @admin.register(Categoria)
@@ -60,7 +102,7 @@ class ProductoAdmin(ImportExportModelAdmin):
             'fields': ('nombre', 'descripcion', 'historia', 'productor', 'categoria')
         }),
         ('Precio y presentación', {
-            'fields': ('precio', 'unidad', 'foto', 'video_url', 'destacado', 'certificado')
+            'fields': ('precio', 'unidad', 'precio_mayor', 'unidad_mayor', 'foto', 'video_url', 'destacado', 'certificado')
         }),
         ('Inventario', {
             'fields': ('stock', 'stock_minimo', 'disponible'),

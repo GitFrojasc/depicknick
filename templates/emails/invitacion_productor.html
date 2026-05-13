@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tu marca en dePicknick</title>
+</head>
+<body style="margin:0;padding:0;background:#f5f0e8;font-family:Arial,sans-serif;">
+
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f0e8;padding:32px 0;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+
+  <!-- HEADER -->
+  <tr>
+    <td style="background:#2d5a27;border-radius:16px 16px 0 0;padding:32px 40px;text-align:center;">
+      <p style="margin:0;font-family:Georgia,serif;font-size:28px;color:#f5f0e8;letter-spacing:3px;font-style:italic;">
+        de<span style="color:#8db87a;font-style:normal;font-weight:bold;">Picknick</span>
+      </p>
+      <p style="margin:8px 0 0;font-size:12px;color:rgba(255,255,255,0.6);letter-spacing:2px;text-transform:uppercase;">
+        Del campo a tu mesa · Eje Cafetero, Colombia
+      </p>
+    </td>
+  </tr>
+
+  <!-- INTRO -->
+  <tr>
+    <td style="background:white;padding:40px 40px 32px;">
+      <p style="margin:0 0 8px;font-size:12px;color:#4a7c59;letter-spacing:2px;text-transform:uppercase;">Tu perfil en la plataforma</p>
+      <h1 style="margin:0 0 16px;font-family:Georgia,serif;font-size:26px;color:#5c3d2e;">
+        Hola, {{ productor.nombre }} 👋
+      </h1>
+      <p style="margin:0 0 16px;font-size:15px;color:#444;line-height:1.7;">
+        Hemos creado tu perfil en <strong>dePicknick</strong> — la plataforma que conecta
+        productores campesinos del Eje Cafetero directamente con compradores, sin intermediarios.
+      </p>
+      <p style="margin:0;font-size:15px;color:#444;line-height:1.7;">
+        Aquí está cómo te presentamos a los clientes, junto con tus productos, precios y la historia detrás de cada uno.
+      </p>
+    </td>
+  </tr>
+
+  <!-- PERFIL DEL PRODUCTOR -->
+  <tr>
+    <td style="background:#f5f0e8;padding:0 40px 0;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background:white;border-radius:12px;margin:8px 0;overflow:hidden;">
+        <tr>
+          <td style="background:#2d5a27;padding:20px 24px;">
+            <p style="margin:0;font-size:11px;color:#8db87a;letter-spacing:2px;text-transform:uppercase;">Tu marca</p>
+            <h2 style="margin:6px 0 4px;font-family:Georgia,serif;font-size:22px;color:white;">{{ productor.nombre }}</h2>
+            <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.7);">📍 {{ productor.ubicacion }}</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:24px;">
+            <p style="margin:0;font-size:14px;color:#555;line-height:1.7;font-style:italic;border-left:3px solid #8db87a;padding-left:14px;">
+              "{{ productor.historia }}"
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- PRODUCTOS -->
+  <tr>
+    <td style="background:#f5f0e8;padding:24px 40px 8px;">
+      <p style="margin:0 0 4px;font-size:11px;color:#4a7c59;letter-spacing:2px;text-transform:uppercase;">Tus productos en la plataforma</p>
+      <h3 style="margin:0;font-family:Georgia,serif;font-size:18px;color:#5c3d2e;">{{ productos.count }} producto{% if productos.count != 1 %}s{% endif %} publicado{% if productos.count != 1 %}s{% endif %}</h3>
+    </td>
+  </tr>
+
+  {% for p in productos %}
+  <tr>
+    <td style="background:#f5f0e8;padding:6px 40px;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background:white;border-radius:12px;overflow:hidden;">
+        <tr>
+          <!-- FOTO / EMOJI -->
+          <td width="100" style="background:{{ p.categoria.emoji|yesno:'#e8f5e2,#fff3e0' }};text-align:center;vertical-align:middle;padding:20px;font-size:3rem;">
+            {% if p.foto %}
+              <img src="{{ request.scheme }}://{{ request.get_host }}/media/{{ p.foto }}" width="80" height="80" style="border-radius:8px;object-fit:cover;" alt="{{ p.nombre }}">
+            {% else %}
+              {{ p.categoria.emoji }}
+            {% endif %}
+          </td>
+          <!-- INFO -->
+          <td style="padding:20px 20px 20px 16px;vertical-align:top;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  {% if p.destacado %}
+                  <span style="background:#c4622d;color:white;font-size:9px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:8px;">Destacado</span>
+                  {% endif %}
+                  {% if p.certificado %}
+                  <span style="background:#2d5a27;color:white;font-size:9px;padding:3px 8px;border-radius:8px;margin-left:4px;">✓ Certificado</span>
+                  {% endif %}
+                </td>
+              </tr>
+              <tr>
+                <td style="padding-top:6px;">
+                  <p style="margin:0 0 4px;font-family:Georgia,serif;font-size:16px;color:#5c3d2e;font-weight:bold;">{{ p.nombre }}</p>
+                  <p style="margin:0 0 10px;font-size:12px;color:#666;line-height:1.5;">{{ p.descripcion }}</p>
+                </td>
+              </tr>
+              <!-- PRECIOS -->
+              <tr>
+                <td>
+                  <table cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="background:#f5f0e8;border-radius:8px;padding:8px 14px;margin-right:8px;">
+                        <p style="margin:0;font-size:10px;color:#4a7c59;letter-spacing:1px;text-transform:uppercase;">Precio detal</p>
+                        <p style="margin:2px 0 0;font-size:16px;font-weight:bold;color:#5c3d2e;">${{ p.precio|floatformat:0 }} <span style="font-size:11px;font-weight:normal;color:#888;">/ {{ p.unidad }}</span></p>
+                      </td>
+                      {% if p.precio_mayor %}
+                      <td width="12"></td>
+                      <td style="background:#e8f5e2;border-radius:8px;padding:8px 14px;">
+                        <p style="margin:0;font-size:10px;color:#2d5a27;letter-spacing:1px;text-transform:uppercase;">Precio mayor</p>
+                        <p style="margin:2px 0 0;font-size:16px;font-weight:bold;color:#2d5a27;">${{ p.precio_mayor|floatformat:0 }} <span style="font-size:11px;font-weight:normal;color:#888;">/ {{ p.unidad_mayor|default:p.unidad }}</span></p>
+                      </td>
+                      {% endif %}
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              {% if p.historia %}
+              <tr>
+                <td style="padding-top:10px;">
+                  <p style="margin:0;font-size:11px;color:#4a7c59;font-style:italic;line-height:1.5;">
+                    "{{ p.historia|truncatewords:25 }}"
+                  </p>
+                </td>
+              </tr>
+              {% endif %}
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  {% endfor %}
+
+  <!-- INVENTARIO -->
+  <tr>
+    <td style="background:#f5f0e8;padding:20px 40px 8px;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background:#2d5a27;border-radius:12px;padding:24px;">
+        <tr>
+          <td>
+            <p style="margin:0 0 6px;font-size:11px;color:#8db87a;letter-spacing:2px;text-transform:uppercase;">Control de inventario</p>
+            <p style="margin:0 0 14px;font-family:Georgia,serif;font-size:16px;color:white;">Así está tu stock hoy</p>
+            {% for p in productos %}
+            <table width="100%" cellpadding="0" cellspacing="4" style="margin-bottom:6px;">
+              <tr>
+                <td style="font-size:13px;color:rgba(255,255,255,0.85);">{{ p.nombre }}</td>
+                <td align="right">
+                  {% if p.stock == 0 %}
+                    <span style="background:#e53e3e;color:white;font-size:11px;font-weight:bold;padding:3px 10px;border-radius:10px;">AGOTADO</span>
+                  {% elif p.stock <= p.stock_minimo %}
+                    <span style="background:#dd6b20;color:white;font-size:11px;padding:3px 10px;border-radius:10px;">Stock bajo: {{ p.stock }} und.</span>
+                  {% else %}
+                    <span style="background:#38a169;color:white;font-size:11px;padding:3px 10px;border-radius:10px;">{{ p.stock }} disponibles</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- CTA -->
+  <tr>
+    <td style="background:#f5f0e8;padding:24px 40px 32px;text-align:center;">
+      <p style="margin:0 0 6px;font-size:14px;color:#555;">¿Quieres actualizar tu perfil, agregar fotos o cambiar precios?</p>
+      <p style="margin:0 0 20px;font-size:14px;color:#555;">Contáctanos y lo hacemos juntos.</p>
+      <a href="mailto:hola@depicknick.com" style="background:#c4622d;color:white;text-decoration:none;padding:14px 32px;border-radius:24px;font-weight:bold;font-size:15px;display:inline-block;">
+        Escribir a dePicknick →
+      </a>
+    </td>
+  </tr>
+
+  <!-- FOOTER -->
+  <tr>
+    <td style="background:#5c3d2e;border-radius:0 0 16px 16px;padding:24px 40px;text-align:center;">
+      <p style="margin:0 0 4px;font-family:Georgia,serif;font-size:18px;color:white;font-style:italic;">dePicknick</p>
+      <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.5);">Del campo al canasto · Pereira, Colombia</p>
+      <p style="margin:8px 0 0;font-size:12px;color:rgba(255,255,255,0.5);">
+        <a href="mailto:hola@depicknick.com" style="color:#8db87a;text-decoration:none;">hola@depicknick.com</a>
+      </p>
+    </td>
+  </tr>
+
+</table>
+</td></tr>
+</table>
+
+</body>
+</html>
