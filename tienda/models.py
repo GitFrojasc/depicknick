@@ -7,6 +7,8 @@ class Productor(models.Model):
     historia = models.TextField()
     foto = models.ImageField(upload_to='productores/', blank=True)
     video_url = models.URLField(blank=True, help_text="URL del video de YouTube")
+    email = models.EmailField(blank=True, help_text="Para notificaciones automáticas de stock agotado")
+    telefono = models.CharField(max_length=20, blank=True)
     activo = models.BooleanField(default=True)
 
     def __str__(self):
@@ -48,7 +50,59 @@ class Producto(models.Model):
     certificado = models.BooleanField(default=False, help_text="Cumple normas internacionales")
     disponible = models.BooleanField(default=True)
     destacado = models.BooleanField(default=False)
+    stock = models.PositiveIntegerField(default=0, help_text="Unidades disponibles en inventario")
+    stock_minimo = models.PositiveIntegerField(default=5, help_text="Envía alerta al productor cuando baje de este número")
     creado = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        stock_anterior = None
+        if self.pk:
+            try:
+                stock_anterior = Producto.objects.get(pk=self.pk).stock
+            except Producto.DoesNotExist:
+                pass
+
+        if self.stock == 0:
+            self.disponible = False
+        elif self.stock > 0:
+            self.disponible = True
+
+        super().save(*args, **kwargs)
+
+        if self.productor and self.productor.email:
+            self._notificar_si_necesario(stock_anterior)
+
+    def _notificar_si_necesario(self, stock_anterior):
+        from django.core.mail import send_mail
+        nombre_prod = self.productor.nombre
+        email_prod = self.productor.email
+
+        if stock_anterior != 0 and self.stock == 0:
+            send_mail(
+                subject=f'[dePicknick] AGOTADO: {self.nombre}',
+                message=(
+                    f'Hola {nombre_prod},\n\n'
+                    f'El producto "{self.nombre}" se ha agotado en dePicknick.\n'
+                    f'Por favor contáctanos para coordinar el próximo envío.\n\n'
+                    f'Equipo dePicknick\nhola@depicknick.com'
+                ),
+                from_email='hola@depicknick.com',
+                recipient_list=[email_prod],
+                fail_silently=True,
+            )
+        elif stock_anterior is not None and stock_anterior > self.stock_minimo and 0 < self.stock <= self.stock_minimo:
+            send_mail(
+                subject=f'[dePicknick] Stock bajo: {self.nombre}',
+                message=(
+                    f'Hola {nombre_prod},\n\n'
+                    f'El producto "{self.nombre}" tiene solo {self.stock} unidades restantes.\n'
+                    f'Te avisamos para que puedas preparar el próximo lote.\n\n'
+                    f'Equipo dePicknick\nhola@depicknick.com'
+                ),
+                from_email='hola@depicknick.com',
+                recipient_list=[email_prod],
+                fail_silently=True,
+            )
 
     def __str__(self):
         return self.nombre
