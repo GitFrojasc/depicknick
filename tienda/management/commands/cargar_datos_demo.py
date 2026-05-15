@@ -20,6 +20,7 @@ DATOS = [
                 'tipo_categoria': 'gourmet',
                 'destacado': True,
                 'certificado': True,
+                'stock': 30,
             },
             {
                 'nombre': 'Panela Redonda',
@@ -30,6 +31,7 @@ DATOS = [
                 'tipo_categoria': 'despensa',
                 'destacado': False,
                 'certificado': False,
+                'stock': 50,
             },
             {
                 'nombre': 'Miel de Abejas Nativas',
@@ -40,6 +42,7 @@ DATOS = [
                 'tipo_categoria': 'gourmet',
                 'destacado': True,
                 'certificado': False,
+                'stock': 20,
             },
         ]
     },
@@ -60,6 +63,7 @@ DATOS = [
                 'tipo_categoria': 'despensa',
                 'destacado': True,
                 'certificado': False,
+                'stock': 40,
             },
             {
                 'nombre': 'Aguacate Hass',
@@ -70,6 +74,7 @@ DATOS = [
                 'tipo_categoria': 'despensa',
                 'destacado': False,
                 'certificado': False,
+                'stock': 25,
             },
             {
                 'nombre': 'Tomate de Árbol',
@@ -80,6 +85,7 @@ DATOS = [
                 'tipo_categoria': 'despensa',
                 'destacado': False,
                 'certificado': False,
+                'stock': 35,
             },
         ]
     },
@@ -100,6 +106,7 @@ DATOS = [
                 'tipo_categoria': 'gourmet',
                 'destacado': True,
                 'certificado': True,
+                'stock': 50,
             },
             {
                 'nombre': 'Arequipe de Leche de Búfala',
@@ -110,6 +117,7 @@ DATOS = [
                 'tipo_categoria': 'gourmet',
                 'destacado': True,
                 'certificado': False,
+                'stock': 30,
             },
             {
                 'nombre': 'Bocadillo Veleño Premium',
@@ -120,6 +128,7 @@ DATOS = [
                 'tipo_categoria': 'gourmet',
                 'destacado': False,
                 'certificado': True,
+                'stock': 40,
             },
         ]
     },
