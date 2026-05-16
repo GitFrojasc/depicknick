@@ -1,8 +1,11 @@
+from io import BytesIO
 from django.contrib import admin
 from django.utils.html import format_html
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.http import HttpResponse
+import openpyxl
+from openpyxl.styles import Font, PatternFill, Alignment
 from import_export import resources, fields
 from import_export.admin import ImportExportModelAdmin
 from import_export.widgets import ForeignKeyWidget
@@ -24,12 +27,19 @@ class ProductoResource(resources.ModelResource):
     class Meta:
         model = Producto
         fields = (
-            'id', 'nombre', 'descripcion', 'historia', 'productor',
-            'categoria', 'precio', 'unidad', 'stock', 'stock_minimo',
-            'destacado', 'certificado',
+            'id', 'nombre', 'descripcion', 'ingredientes', 'historia',
+            'productor', 'categoria', 'precio', 'unidad',
+            'precio_mayor', 'unidad_mayor', 'caducidad',
+            'tiempo_espera', 'cobertura_envio',
+            'stock', 'stock_minimo', 'destacado', 'certificado',
         )
         export_order = fields
         import_id_fields = ['nombre']
+
+    def skip_row(self, instance, original, row, import_validation_errors=None):
+        if str(row.get('nombre', '')).startswith('(ejemplo)'):
+            return True
+        return super().skip_row(instance, original, row, import_validation_errors)
 
 
 class ItemPedidoInline(admin.TabularInline):
@@ -46,6 +56,154 @@ def _contexto_invitacion(productor, request):
     }
 
 
+def _generar_excel_onboarding(productor):
+    from openpyxl.utils import get_column_letter
+    from openpyxl.styles import Side, Border
+    wb = openpyxl.Workbook()
+
+    # --- Hoja 1: Instrucciones ---
+    ws_info = wb.active
+    ws_info.title = "Instrucciones"
+    ws_info.column_dimensions['A'].width = 90
+
+    fill_verde = PatternFill("solid", fgColor="2D5A27")
+    fill_crema = PatternFill("solid", fgColor="F5F0E8")
+    fill_cafe = PatternFill("solid", fgColor="5C3D2E")
+
+    instrucciones = [
+        ("dePicknick — Formulario de productos", Font(name="Arial", size=16, bold=True, color="FFFFFF"), fill_verde, 36),
+        (f"Productor: {productor.nombre}  ·  {productor.ubicacion}", Font(name="Arial", size=11, color="FFFFFF", italic=True), fill_verde, 22),
+        ("", None, fill_verde, 10),
+        ("¿Cómo usar este archivo?", Font(name="Arial", size=12, bold=True, color="5C3D2E"), fill_crema, 22),
+        ("1. Ve a la hoja «Productos» (pestaña abajo).", Font(name="Arial", size=10, color="333333"), fill_crema, 18),
+        ("2. Completa cada columna para tus productos. Las columnas con * son obligatorias.", Font(name="Arial", size=10, color="333333"), fill_crema, 18),
+        ("3. Agrega tantas filas como necesites. La fila gris es un ejemplo — no la borres.", Font(name="Arial", size=10, color="333333"), fill_crema, 18),
+        ("4. Envía el archivo completado a hola@depicknick.com y nosotros lo subimos.", Font(name="Arial", size=10, color="333333"), fill_crema, 18),
+        ("", None, fill_crema, 10),
+        ("Guía de columnas:", Font(name="Arial", size=11, bold=True, color="FFFFFF"), fill_cafe, 22),
+        ("nombre              → Nombre corto del producto", Font(name="Arial", size=10, color="333333"), None, 18),
+        ("descripcion         → Descripción para los clientes (1-2 oraciones)", Font(name="Arial", size=10, color="333333"), None, 18),
+        ("ingredientes        → Lista de ingredientes o materias primas", Font(name="Arial", size=10, color="333333"), None, 18),
+        ("historia            → Historia detrás del producto (opcional pero recomendado)", Font(name="Arial", size=10, color="333333"), None, 18),
+        ("precio              → Precio de venta al detal en pesos COP (ej: 28000)", Font(name="Arial", size=10, color="333333"), None, 18),
+        ("unidad              → Unidad de medida (ej: 250g, kg, unidad, 500ml)", Font(name="Arial", size=10, color="333333"), None, 18),
+        ("precio_mayor        → Precio al por mayor para restaurantes (opcional)", Font(name="Arial", size=10, color="333333"), None, 18),
+        ("unidad_mayor        → Unidad mayoreo (ej: caja x 12, bulto x 25kg)", Font(name="Arial", size=10, color="333333"), None, 18),
+        ("caducidad           → Vida útil (ej: 6 meses sellado, refrigerado 15 días)", Font(name="Arial", size=10, color="333333"), None, 18),
+        ("tiempo_espera       → Días de espera para preparar el pedido (ej: 3)", Font(name="Arial", size=10, color="333333"), None, 18),
+        ("cobertura_envio     → Escribe: local  o  nacional", Font(name="Arial", size=10, color="333333"), None, 18),
+        ("stock               → Unidades disponibles hoy", Font(name="Arial", size=10, color="333333"), None, 18),
+        ("stock_minimo        → Número mínimo antes de alertarte (recomendado: 5)", Font(name="Arial", size=10, color="333333"), None, 18),
+        ("destacado           → Escribe TRUE si quieres que aparezca primero", Font(name="Arial", size=10, color="333333"), None, 18),
+        ("certificado         → Escribe TRUE si tienes certificación oficial", Font(name="Arial", size=10, color="333333"), None, 18),
+        ("productor           → Tu nombre exactamente como lo registraste", Font(name="Arial", size=10, color="333333"), None, 18),
+        ("categoria_tipo      → Escribe una de: despensa / gourmet / ancheta / picknick", Font(name="Arial", size=10, color="333333"), None, 18),
+    ]
+
+    for texto, fuente, relleno, altura in instrucciones:
+        r = ws_info.max_row + 1 if ws_info.max_row > 0 else 1
+        ws_info.append([texto])
+        if fuente:
+            ws_info.cell(row=r, column=1).font = fuente
+        if relleno:
+            ws_info.cell(row=r, column=1).fill = relleno
+        ws_info.cell(row=r, column=1).alignment = Alignment(vertical='center', wrap_text=True)
+        ws_info.row_dimensions[r].height = altura
+
+    # --- Hoja 2: Productos (importable) ---
+    ws = wb.create_sheet("Productos")
+
+    columnas = [
+        ('nombre *', 'nombre', 28),
+        ('descripcion *', 'descripcion', 38),
+        ('ingredientes', 'ingredientes', 28),
+        ('historia', 'historia', 35),
+        ('precio *', 'precio', 16),
+        ('unidad *', 'unidad', 14),
+        ('precio_mayor', 'precio_mayor', 16),
+        ('unidad_mayor', 'unidad_mayor', 18),
+        ('caducidad', 'caducidad', 22),
+        ('tiempo_espera', 'tiempo_espera', 16),
+        ('cobertura_envio', 'cobertura_envio', 18),
+        ('stock', 'stock', 12),
+        ('stock_minimo', 'stock_minimo', 14),
+        ('destacado', 'destacado', 12),
+        ('certificado', 'certificado', 14),
+        ('productor', 'productor', 26),
+        ('categoria_tipo', 'categoria_tipo', 18),
+    ]
+
+    fill_header = PatternFill("solid", fgColor="2D5A27")
+    fill_ejemplo = PatternFill("solid", fgColor="EEEEEE")
+    font_header = Font(name="Arial", size=9, bold=True, color="FFFFFF")
+    font_ejemplo = Font(name="Arial", size=9, italic=True, color="999999")
+    font_data = Font(name="Arial", size=10)
+
+    # Row 1: headers (field names — for import)
+    for i, (label, field, width) in enumerate(columnas, 1):
+        col = get_column_letter(i)
+        ws.column_dimensions[col].width = width
+        cell = ws.cell(row=1, column=i, value=field)
+        cell.font = font_header
+        cell.fill = fill_header
+        cell.alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
+        cell.comment = None
+    ws.row_dimensions[1].height = 28
+
+    # Row 2: example (skipped on import via skip_row)
+    productos_qs = Producto.objects.filter(productor=productor).select_related('categoria')
+    ejemplo = [
+        '(ejemplo) Café Especial Tostado', 'Café arábica de altura, tostado artesanalmente',
+        '100% café arábica', 'Crece a 1.800m s.n.m., cosecha manual',
+        '28000', '250g', '50000', 'caja x 4',
+        '6 meses sellado', '3', 'nacional', '30', '5', 'TRUE', 'FALSE',
+        productor.nombre, 'gourmet',
+    ]
+    for i, val in enumerate(ejemplo, 1):
+        cell = ws.cell(row=2, column=i, value=val)
+        cell.font = font_ejemplo
+        cell.fill = fill_ejemplo
+        cell.alignment = Alignment(horizontal='left', vertical='center')
+    ws.row_dimensions[2].height = 18
+
+    # Rows 3+: existing products pre-filled
+    row_num = 3
+    for p in productos_qs:
+        data = [
+            p.nombre, p.descripcion, p.ingredientes, p.historia,
+            float(p.precio) if p.precio else '',
+            p.unidad,
+            float(p.precio_mayor) if p.precio_mayor else '',
+            p.unidad_mayor or '',
+            p.caducidad, p.tiempo_espera, p.cobertura_envio,
+            p.stock, p.stock_minimo,
+            'TRUE' if p.destacado else 'FALSE',
+            'TRUE' if p.certificado else 'FALSE',
+            p.productor.nombre if p.productor else '',
+            p.categoria.tipo if p.categoria else '',
+        ]
+        for i, val in enumerate(data, 1):
+            cell = ws.cell(row=row_num, column=i, value=val)
+            cell.font = font_data
+            cell.alignment = Alignment(horizontal='left', vertical='center', wrap_text=True)
+        ws.row_dimensions[row_num].height = 18
+        row_num += 1
+
+    # 5 blank rows for new products
+    for _ in range(5):
+        for i in range(1, len(columnas) + 1):
+            ws.cell(row=row_num, column=i, value='')
+        ws.row_dimensions[row_num].height = 18
+        row_num += 1
+
+    ws.freeze_panes = 'A2'
+
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+    return output.getvalue()
+
+
 @admin.register(Productor)
 class ProductorAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'ubicacion', 'email', 'telefono', 'activo')
@@ -53,28 +211,51 @@ class ProductorAdmin(admin.ModelAdmin):
     search_fields = ('nombre', 'ubicacion', 'email')
     actions = ['enviar_invitacion', 'previsualizar_invitacion']
 
+    def _enviar_correo_productor(self, request, productor):
+        ctx = _contexto_invitacion(productor, request)
+        html = render_to_string('emails/invitacion_productor.html', ctx)
+        msg = EmailMultiAlternatives(
+            subject=f'Tu marca en dePicknick — {productor.nombre}',
+            body=f'Hola {productor.nombre}, te presentamos tu perfil en dePicknick.',
+            from_email='hola@depicknick.com',
+            to=[productor.email],
+        )
+        msg.attach_alternative(html, 'text/html')
+        excel = _generar_excel_onboarding(productor)
+        msg.attach(
+            f'depicknick_catalogo_{productor.nombre.replace(" ", "_")}.xlsx',
+            excel,
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        )
+        msg.send(fail_silently=False)
+
     @admin.action(description='Enviar correo de invitación a productores seleccionados')
     def enviar_invitacion(self, request, queryset):
-        enviados, sin_email = 0, 0
+        enviados, sin_email, errores = 0, 0, 0
         for productor in queryset:
             if not productor.email:
                 sin_email += 1
                 continue
-            ctx = _contexto_invitacion(productor, request)
-            html = render_to_string('emails/invitacion_productor.html', ctx)
-            msg = EmailMultiAlternatives(
-                subject=f'Tu marca en dePicknick — {productor.nombre}',
-                body=f'Hola {productor.nombre}, te presentamos tu perfil en dePicknick.',
-                from_email='hola@depicknick.com',
-                to=[productor.email],
-            )
-            msg.attach_alternative(html, 'text/html')
-            msg.send(fail_silently=True)
-            enviados += 1
+            try:
+                self._enviar_correo_productor(request, productor)
+                enviados += 1
+            except Exception as e:
+                errores += 1
+                self.message_user(request, f'Error enviando a {productor.nombre}: {e}', level='error')
         if enviados:
-            self.message_user(request, f'{enviados} correo(s) enviado(s) correctamente.')
+            self.message_user(request, f'{enviados} correo(s) enviado(s) con Excel adjunto.')
         if sin_email:
-            self.message_user(request, f'{sin_email} productor(es) sin email configurado — no se les envió.', level='warning')
+            self.message_user(request, f'{sin_email} productor(es) sin email — no se les envió.', level='warning')
+
+    def save_model(self, request, obj, form, change):
+        is_new = not obj.pk
+        super().save_model(request, obj, form, change)
+        if is_new and obj.email:
+            try:
+                self._enviar_correo_productor(request, obj)
+                self.message_user(request, f'Correo de bienvenida enviado a {obj.email} con el Excel adjunto.')
+            except Exception as e:
+                self.message_user(request, f'Productor creado pero error al enviar correo: {e}', level='warning')
 
     @admin.action(description='Previsualizar correo (abre en el navegador)')
     def previsualizar_invitacion(self, request, queryset):

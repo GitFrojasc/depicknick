@@ -38,15 +38,21 @@ class Categoria(models.Model):
 
 
 class Producto(models.Model):
+    COBERTURA_CHOICES = [('local', 'Solo local'), ('nacional', 'Envío nacional')]
+
     nombre = models.CharField(max_length=200)
     descripcion = models.TextField()
     historia = models.TextField(help_text="La historia detrás de este producto")
+    ingredientes = models.TextField(blank=True, help_text="Lista de ingredientes o componentes")
     productor = models.ForeignKey(Productor, on_delete=models.SET_NULL, null=True, blank=True)
     categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True)
     precio = models.DecimalField(max_digits=10, decimal_places=2, help_text="Precio al detal (consumidor final)")
     precio_mayor = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Precio al por mayor (restaurantes, revendedores)")
     unidad = models.CharField(max_length=50, default='unidad', help_text="kg, unidad, 250g, etc.")
     unidad_mayor = models.CharField(max_length=50, blank=True, help_text="Ej: caja x 12, bulto x 50kg")
+    caducidad = models.CharField(max_length=100, blank=True, help_text="Ej: 6 meses sellado, refrigerado 15 días")
+    tiempo_espera = models.PositiveIntegerField(default=0, help_text="Días de espera promedio por pedido")
+    cobertura_envio = models.CharField(max_length=10, choices=COBERTURA_CHOICES, default='local', help_text="¿Se puede enviar a todo el país?")
     foto = models.ImageField(upload_to='productos/', blank=True)
     video_url = models.URLField(blank=True, help_text="Video YouTube del producto")
     certificado = models.BooleanField(default=False, help_text="Cumple normas internacionales")
