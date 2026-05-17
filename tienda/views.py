@@ -8,6 +8,42 @@ from urllib.parse import quote
 import stripe
 
 
+def productor_perfil(request, pk):
+    productor = get_object_or_404(Productor, pk=pk, activo=True)
+    productos = (
+        productor.producto_set
+        .filter(disponible=True)
+        .select_related('categoria')
+        .order_by('-destacado', 'nombre')
+    )
+    whatsapp_url = None
+    if productor.telefono:
+        from urllib.parse import quote as _quote
+        num = productor.telefono.strip().replace(' ', '').replace('-', '')
+        if not num.startswith('57'):
+            num = '57' + num
+        msg = _quote(f'Hola, vi tu perfil en Sumercá y me interesa conocer más sobre {productor.nombre}.')
+        whatsapp_url = f'https://wa.me/{num}?text={msg}'
+    video_embed_url = None
+    if productor.video_url:
+        url = productor.video_url
+        if 'watch?v=' in url:
+            video_embed_url = url.replace('watch?v=', 'embed/')
+        elif 'youtu.be/' in url:
+            vid_id = url.split('youtu.be/')[-1].split('?')[0]
+            video_embed_url = f'https://www.youtube.com/embed/{vid_id}'
+        else:
+            video_embed_url = url
+
+    return render(request, 'productor.html', {
+        'productor': productor,
+        'productos': productos,
+        'whatsapp_url': whatsapp_url,
+        'video_embed_url': video_embed_url,
+        'carrito_count': _carrito_count(request),
+    })
+
+
 def _carrito_count(request):
     return sum(request.session.get('carrito', {}).values())
 
@@ -66,11 +102,32 @@ CANASTOS_INFO = {
 }
 
 
+def _notificar_admin_suscripcion(suscripcion):
+    from django.core.mail import send_mail
+    send_mail(
+        subject=f'[Sumercá] Nueva suscripción — {suscripcion.nombre_cliente}',
+        message=(
+            f'Nueva suscripción recibida:\n\n'
+            f'Nombre: {suscripcion.nombre_cliente}\n'
+            f'Email: {suscripcion.email}\n'
+            f'Teléfono: {suscripcion.telefono}\n'
+            f'Ciudad: {suscripcion.ciudad}\n'
+            f'Dirección: {suscripcion.direccion}\n'
+            f'Frecuencia: {suscripcion.get_frecuencia_display()}\n\n'
+            f'Ver en admin: /admin/tienda/suscripcion/{suscripcion.pk}/change/'
+        ),
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[settings.ADMIN_NOTIFY_EMAIL],
+        fail_silently=True,
+    )
+
+
 def inicio(request):
     if request.method == 'POST':
         form = SuscripcionForm(request.POST)
         if form.is_valid():
-            form.save()
+            suscripcion = form.save()
+            _notificar_admin_suscripcion(suscripcion)
             return redirect('/?suscrito=ok#canastos')
         return render(request, 'index.html', {'form': form, 'modal_abierto': True})
     form = SuscripcionForm()

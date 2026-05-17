@@ -21,6 +21,7 @@ from tienda import views
 
 urlpatterns = [
     path('', views.inicio, name='inicio'),
+    path('productor/<int:pk>/', views.productor_perfil, name='productor_perfil'),
     path('canasto/<str:tipo>/', views.canasto_detalle, name='canasto'),
     path('carrito/', views.ver_carrito, name='ver_carrito'),
     path('carrito/agregar/<int:producto_id>/', views.agregar_al_carrito, name='agregar_carrito'),

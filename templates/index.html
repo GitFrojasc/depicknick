@@ -47,7 +47,9 @@
 
     /* ── HERO ── */
     .hero {
-      background: linear-gradient(150deg, var(--verde) 0%, #1b3a22 100%);
+      background:
+        linear-gradient(150deg, rgba(20,55,25,.62) 0%, rgba(10,30,15,.72) 100%),
+        url("{% static 'img/mercado/canasto1.jpg' %}") center/cover no-repeat;
       min-height: 88vh; display: flex; align-items: center; justify-content: center;
       text-align: center; padding: 5rem 2rem;
     }
@@ -124,36 +126,43 @@
             max-width: 520px; margin: 0 auto; line-height: 1.6; }
 
     /* ── PRODUCTORES ── */
-    .productores-section { padding: 4.5rem 2rem; max-width: 1200px; margin: 0 auto; }
-    .prod-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 1.2rem;
+    .productores-section { padding: 4.5rem 2rem; max-width: 1100px; margin: 0 auto; }
+    .prod-lista-wrap {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0 3.5rem;
     }
-    .prod-card {
-      background: #fff; border-radius: 14px; overflow: hidden;
-      box-shadow: 0 2px 16px rgba(0,0,0,.06); transition: transform .2s, box-shadow .2s;
+    .prod-fila {
+      display: flex; align-items: baseline; gap: .9rem;
+      padding: .9rem 0; border-bottom: 1px solid rgba(0,0,0,.07);
+      transition: padding-left .15s, background .15s;
+      cursor: pointer; text-decoration: none; color: inherit;
     }
-    .prod-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(0,0,0,.12); }
-    .prod-foto {
-      height: 140px; background: linear-gradient(135deg, #d4edda, #a8d5b5);
-      display: flex; align-items: center; justify-content: center; font-size: 3.5rem;
-      position: relative; overflow: hidden;
+    .prod-fila:hover { padding-left: .5rem; background: rgba(45,106,79,.04); border-radius: 6px; }
+    .prod-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: .35rem;
     }
-    .prod-foto img { width: 100%; height: 100%; object-fit: cover; }
-    .prod-acuerdo {
-      position: absolute; top: 8px; right: 8px;
-      background: rgba(45,90,39,.85); color: #fff; font-family: Arial, sans-serif;
-      font-size: .6rem; letter-spacing: 1px; text-transform: uppercase;
-      padding: .2rem .5rem; border-radius: 8px;
+    .pd-directo { background: var(--verde-m); }
+    .pd-acopio  { background: var(--terracota); }
+    .pd-ambos   { background: var(--miel); }
+    .prod-fila-info { flex: 1; min-width: 0; }
+    .prod-fila-nombre {
+      font-size: .98rem; color: var(--marron); line-height: 1.25;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .prod-body { padding: 1rem 1.1rem; }
-    .prod-cat { font-family: Arial, sans-serif; font-size: .65rem; letter-spacing: 1.5px;
-                text-transform: uppercase; color: var(--verde-m); margin-bottom: .3rem; }
-    .prod-nombre { font-size: 1rem; color: var(--marron); margin-bottom: .4rem; line-height: 1.2; }
-    .prod-ubi { font-family: Arial, sans-serif; font-size: .75rem; color: var(--gris); margin-bottom: .5rem; }
-    .prod-historia { font-family: Arial, sans-serif; font-size: .78rem; color: #555; line-height: 1.45;
-                     display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .prod-fila-meta {
+      font-family: Arial, sans-serif; font-size: .68rem; color: var(--gris);
+      margin-top: .18rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .prod-legend {
+      display: flex; gap: 1.4rem; margin-top: 2rem; flex-wrap: wrap;
+      font-family: Arial, sans-serif; font-size: .72rem; color: var(--gris);
+    }
+    .prod-legend span { display: flex; align-items: center; gap: .4rem; }
+    .prod-legend span::before {
+      content: ''; width: 8px; height: 8px; border-radius: 50%; display: inline-block;
+    }
+    .pl-d::before { background: var(--verde-m); }
+    .pl-a::before { background: var(--terracota); }
+    .pl-b::before { background: var(--miel); }
 
     /* ── PARA PRODUCTORES ── */
     .pitch-section {
@@ -289,10 +298,10 @@
       .stat { padding: .8rem 1.2rem; }
       .pitch-vs { grid-template-columns: 1fr; }
       .pitch-flecha { transform: rotate(90deg); }
-      .prod-grid, .can-grid { grid-template-columns: 1fr 1fr; }
+      .prod-lista-wrap, .can-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 420px) {
-      .prod-grid, .can-grid { grid-template-columns: 1fr; }
+      .prod-lista-wrap, .can-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -359,6 +368,9 @@
 <section class="galeria-section">
   <div class="galeria-label">Pereira de Cosecha · Plaza de Bolívar · 1er viernes de cada mes</div>
   <div class="galeria-scroll">
+    <img class="galeria-foto" src="{% static 'img/mercado/canasto1.jpg' %}" alt="Canasto Sumercá con productos reales">
+    <img class="galeria-foto" src="{% static 'img/mercado/canasto2.jpg' %}" alt="Canasto con Makali y BasilArte">
+    <img class="galeria-foto" src="{% static 'img/mercado/canasto3.jpg' %}" alt="Canastos artesanales">
     <img class="galeria-foto" src="{% static 'img/mercado/m1.jpg' %}" alt="Mercado campesino Pereira">
     <img class="galeria-foto" src="{% static 'img/mercado/m2.jpg' %}" alt="Productora en el mercado">
     <img class="galeria-foto" src="{% static 'img/mercado/m3.jpg' %}" alt="Productor con su producto">
@@ -378,35 +390,27 @@
     <p>Campesinos, artesanos y emprendedores de los corregimientos de Pereira. Cada perfil tiene su historia.</p>
   </div>
 
-  <div class="prod-grid">
+  <div class="prod-lista-wrap">
     {% for p in productores %}
-    <div class="prod-card">
-      <div class="prod-foto">
-        {% if p.foto %}
-          <img src="{{ p.foto.url }}" alt="{{ p.nombre }}">
-        {% else %}
-          👩‍🌾
-        {% endif %}
-        {% if p.tipo_acuerdo == 'directo' %}
-          <span class="prod-acuerdo">Envío directo</span>
-        {% endif %}
+    <a href="{% url 'productor_perfil' p.pk %}" class="prod-fila">
+      <span class="prod-dot pd-{{ p.tipo_acuerdo }}"></span>
+      <div class="prod-fila-info">
+        <div class="prod-fila-nombre">{{ p.nombre }}</div>
+        <div class="prod-fila-meta">
+          {% if p.ubicacion %}{{ p.ubicacion|truncatechars:38 }}{% else %}Pereira, Risaralda{% endif %}
+        </div>
       </div>
-      <div class="prod-body">
-        <div class="prod-cat">{{ p.mercado.nombre|default:"Pereira" }}</div>
-        <div class="prod-nombre">{{ p.nombre }}</div>
-        {% if p.ubicacion %}
-        <div class="prod-ubi">📍 {{ p.ubicacion }}</div>
-        {% endif %}
-        {% if p.historia %}
-        <div class="prod-historia">{{ p.historia|truncatechars:140 }}</div>
-        {% endif %}
-      </div>
-    </div>
+    </a>
     {% empty %}
     <div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--gris);font-family:Arial,sans-serif;">
       Los productores están llegando. ¡Vuelve pronto!
     </div>
     {% endfor %}
+  </div>
+  <div class="prod-legend">
+    <span class="pl-d">Entrega directa</span>
+    <span class="pl-a">En acopio</span>
+    <span class="pl-b">Directo + acopio</span>
   </div>
 </section>
 
@@ -467,7 +471,7 @@
     </div>
 
     <div class="pitch-cta">
-      <a href="mailto:hola@sumerca.co?subject=Quiero%20unirme%20a%20Sumerca&body=Hola%2C%20soy%20productor%20de%20Pereira%20de%20Cosecha%20y%20quiero%20unirme%20a%20Sumerca." class="btn-pitch">
+      <a href="mailto:francopacho79@gmail.com?subject=Quiero%20unirme%20a%20Sumerc%C3%A1&body=Hola%2C%20soy%20productor%20de%20Pereira%20de%20Cosecha%20y%20quiero%20unirme%20a%20Sumerc%C3%A1." class="btn-pitch">
         Quiero unirme a Sumercá →
       </a>
       <p style="margin-top:1rem;font-family:Arial,sans-serif;font-size:.78rem;color:rgba(255,255,255,.5);">
