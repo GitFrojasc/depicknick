@@ -153,7 +153,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Email
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
-DEFAULT_FROM_EMAIL = 'dePicknick <onboarding@resend.dev>'
+DEFAULT_FROM_EMAIL = 'Sumercá <onboarding@resend.dev>'
+REPLY_TO_EMAIL = os.environ.get('REPLY_TO_EMAIL', 'francopacho79@gmail.com')
 
 ANYMAIL = {
     'RESEND_API_KEY': os.environ.get('RESEND_API_KEY', ''),

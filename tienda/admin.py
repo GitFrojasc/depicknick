@@ -234,13 +234,16 @@ class ProductorAdmin(admin.ModelAdmin):
         return format_html('<span style="color:{};font-weight:bold;">{}%</span>', color, p)
 
     def _enviar_correo_productor(self, request, productor):
+        from django.conf import settings
         ctx = _contexto_invitacion(productor, request)
         html = render_to_string('emails/invitacion_productor.html', ctx)
+        reply_to = getattr(settings, 'REPLY_TO_EMAIL', 'francopacho79@gmail.com')
         msg = EmailMultiAlternatives(
             subject=f'Tu marca en Sumercá — {productor.nombre}',
             body=f'Hola {productor.nombre}, te presentamos tu perfil en Sumercá.',
             from_email='Sumercá <onboarding@resend.dev>',
             to=[productor.email],
+            reply_to=[reply_to],
         )
         msg.attach_alternative(html, 'text/html')
         excel = _generar_excel_onboarding(productor)
