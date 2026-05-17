@@ -1,1 +1,1 @@
-web: python manage.py collectstatic --noinput && gunicorn core.wsgi --log-file -
+web: python manage.py migrate && python manage.py cargar_mercado_pereira && gunicorn core.wsgi --log-file -
