@@ -217,7 +217,7 @@ class ProductorAdmin(admin.ModelAdmin):
         msg = EmailMultiAlternatives(
             subject=f'Tu marca en dePicknick — {productor.nombre}',
             body=f'Hola {productor.nombre}, te presentamos tu perfil en dePicknick.',
-            from_email='hola@depicknick.com',
+            from_email='dePicknick <onboarding@resend.dev>',
             to=[productor.email],
         )
         msg.attach_alternative(html, 'text/html')
