@@ -1,6 +1,6 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
-{% block title %}Confirmar cuenta — dePicknick{% endblock %}
+{% block title %}Confirmar cuenta — Sumercá{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -87,9 +87,10 @@
     <form method="POST" action="{% url 'socialaccount_signup' %}">
       {% csrf_token %}
       {{ form.as_p }}
-      <button type="submit" class="btn-confirmar">Crear mi cuenta en dePicknick</button>
+      <button type="submit" class="btn-confirmar">Crear mi cuenta en Sumercá</button>
     </form>
     <a href="/" class="btn-cancelar">← Cancelar</a>
   </div>
 </div>
 {% endblock %}
+

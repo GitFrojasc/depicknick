@@ -1,4 +1,4 @@
-from django.apps import AppConfig
+﻿from django.apps import AppConfig
 
 
 class TiendaConfig(AppConfig):
@@ -15,7 +15,7 @@ class TiendaConfig(AppConfig):
                 from django.core.mail import send_mail
                 PerfilCliente.objects.get_or_create(usuario=instance)
                 send_mail(
-                    subject=f'[dePicknick] Nuevo cliente: {instance.get_full_name() or instance.username}',
+                    subject=f'[Sumercá] Nuevo cliente: {instance.get_full_name() or instance.username}',
                     message=(
                         f'Se registró un nuevo cliente:\n\n'
                         f'Nombre: {instance.get_full_name() or instance.username}\n'
@@ -23,9 +23,10 @@ class TiendaConfig(AppConfig):
                         f'Usuario: {instance.username}\n\n'
                         f'Verlo en el admin: /admin/auth/user/{instance.pk}/change/'
                     ),
-                    from_email='dePicknick <onboarding@resend.dev>',
+                    from_email='Sumercá <onboarding@resend.dev>',
                     recipient_list=[settings.ADMIN_NOTIFY_EMAIL],
                     fail_silently=True,
                 )
 
         post_save.connect(crear_perfil, sender=User)
+

@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, get_object_or_404
+﻿from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.conf import settings
 from django.contrib.auth import login
@@ -313,7 +313,7 @@ def _whatsapp_url(pedido):
     numero = settings.WHATSAPP_NUMBER
     if not numero:
         return None
-    msg = quote(f'Hola dePicknick 🧺 Acabo de pagar mi pedido #{pedido.pk} por ${pedido.total:,.0f}. ¿Cuándo me lo entregan?')
+    msg = quote(f'Hola Sumercá 🧺 Acabo de pagar mi pedido #{pedido.pk} por ${pedido.total:,.0f}. ¿Cuándo me lo entregan?')
     return f'https://wa.me/{numero}?text={msg}'
 
 
@@ -324,7 +324,7 @@ def _notificar_admin_pedido(pedido):
         for it in pedido.items.select_related('producto').all()
     )
     send_mail(
-        subject=f'[dePicknick] Nuevo pedido #{pedido.pk} — ${pedido.total:,.0f}',
+        subject=f'[Sumercá] Nuevo pedido #{pedido.pk} — ${pedido.total:,.0f}',
         message=(
             f'Nuevo pedido recibido:\n\n'
             f'Cliente: {pedido.nombre_cliente}\n'
@@ -335,7 +335,7 @@ def _notificar_admin_pedido(pedido):
             f'Total: ${pedido.total:,.0f}\n\n'
             f'Ver en admin: /admin/tienda/pedido/{pedido.pk}/change/'
         ),
-        from_email='dePicknick <onboarding@resend.dev>',
+        from_email='Sumercá <onboarding@resend.dev>',
         recipient_list=[settings.ADMIN_NOTIFY_EMAIL],
         fail_silently=True,
     )
@@ -348,7 +348,7 @@ def _enviar_confirmacion_pedido(pedido):
         for it in pedido.items.select_related('producto').all()
     )
     send_mail(
-        subject=f'Pedido #{pedido.pk} confirmado — dePicknick 🧺',
+        subject=f'Pedido #{pedido.pk} confirmado — Sumercá 🧺',
         message=(
             f'Hola {pedido.nombre_cliente},\n\n'
             f'Tu pedido ha sido confirmado. ¡Gracias por apoyar a nuestros productores!\n\n'
@@ -356,9 +356,10 @@ def _enviar_confirmacion_pedido(pedido):
             f'Total: ${pedido.total:,.0f}\n'
             f'Entrega en: {pedido.direccion}, {pedido.ciudad}\n\n'
             f'Nos pondremos en contacto contigo para coordinar la entrega.\n\n'
-            f'Equipo dePicknick\nhola@depicknick.com'
+            f'Equipo Sumercá\nhola@sumerca.co'
         ),
-        from_email='dePicknick <onboarding@resend.dev>',
+        from_email='Sumercá <onboarding@resend.dev>',
         recipient_list=[pedido.email],
         fail_silently=True,
     )
+

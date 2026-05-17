@@ -1,4 +1,4 @@
-from django.db import models
+﻿from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
@@ -192,26 +192,26 @@ class Producto(models.Model):
         email_prod  = self.productor.email
         if stock_anterior != 0 and self.stock == 0:
             send_mail(
-                subject=f'[dePicknick] AGOTADO: {self.nombre}',
+                subject=f'[Sumercá] AGOTADO: {self.nombre}',
                 message=(
                     f'Hola {nombre_prod},\n\n'
                     f'El producto "{self.nombre}" se ha agotado.\n'
                     f'Por favor contáctanos para coordinar el próximo envío.\n\n'
-                    f'Equipo dePicknick\nhola@depicknick.com'
+                    f'Equipo Sumercá\nhola@sumerca.co'
                 ),
-                from_email='dePicknick <onboarding@resend.dev>',
+                from_email='Sumercá <onboarding@resend.dev>',
                 recipient_list=[email_prod],
                 fail_silently=True,
             )
         elif stock_anterior is not None and stock_anterior > self.stock_minimo and 0 < self.stock <= self.stock_minimo:
             send_mail(
-                subject=f'[dePicknick] Stock bajo: {self.nombre}',
+                subject=f'[Sumercá] Stock bajo: {self.nombre}',
                 message=(
                     f'Hola {nombre_prod},\n\n'
                     f'"{self.nombre}" tiene solo {self.stock} unidades restantes.\n\n'
-                    f'Equipo dePicknick\nhola@depicknick.com'
+                    f'Equipo Sumercá\nhola@sumerca.co'
                 ),
-                from_email='dePicknick <onboarding@resend.dev>',
+                from_email='Sumercá <onboarding@resend.dev>',
                 recipient_list=[email_prod],
                 fail_silently=True,
             )
@@ -495,3 +495,4 @@ class MensajeAgente(models.Model):
         verbose_name = "Mensaje"
         verbose_name_plural = "Mensajes del Agente"
         ordering = ['creado']
+

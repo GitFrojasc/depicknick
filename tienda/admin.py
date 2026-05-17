@@ -1,4 +1,4 @@
-from io import BytesIO
+﻿from io import BytesIO
 from django.contrib import admin
 from django.utils.html import format_html
 from django.core.mail import EmailMultiAlternatives
@@ -9,6 +9,10 @@ from openpyxl.styles import Font, PatternFill, Alignment
 from import_export import resources, fields
 from import_export.admin import ImportExportModelAdmin
 from import_export.widgets import ForeignKeyWidget
+admin.site.site_header = "Sumercá — Administración"
+admin.site.site_title = "Sumercá"
+admin.site.index_title = "Su Mercado Campesino Virtual"
+
 from .models import (
     Productor, Categoria, Producto, Canasto, Pedido, ItemPedido, Suscripcion,
     Mercado, Receta, IngredienteReceta, Paquete, ItemPaquete,
@@ -75,14 +79,14 @@ def _generar_excel_onboarding(productor):
     fill_cafe = PatternFill("solid", fgColor="5C3D2E")
 
     instrucciones = [
-        ("dePicknick — Formulario de productos", Font(name="Arial", size=16, bold=True, color="FFFFFF"), fill_verde, 36),
+        ("Sumercá — Formulario de productos", Font(name="Arial", size=16, bold=True, color="FFFFFF"), fill_verde, 36),
         (f"Productor: {productor.nombre}  ·  {productor.ubicacion}", Font(name="Arial", size=11, color="FFFFFF", italic=True), fill_verde, 22),
         ("", None, fill_verde, 10),
         ("¿Cómo usar este archivo?", Font(name="Arial", size=12, bold=True, color="5C3D2E"), fill_crema, 22),
         ("1. Ve a la hoja «Productos» (pestaña abajo).", Font(name="Arial", size=10, color="333333"), fill_crema, 18),
         ("2. Completa cada columna para tus productos. Las columnas con * son obligatorias.", Font(name="Arial", size=10, color="333333"), fill_crema, 18),
         ("3. Agrega tantas filas como necesites. La fila gris es un ejemplo — no la borres.", Font(name="Arial", size=10, color="333333"), fill_crema, 18),
-        ("4. Envía el archivo completado a hola@depicknick.com y nosotros lo subimos.", Font(name="Arial", size=10, color="333333"), fill_crema, 18),
+        ("4. Envía el archivo completado a hola@sumerca.co y nosotros lo subimos.", Font(name="Arial", size=10, color="333333"), fill_crema, 18),
         ("", None, fill_crema, 10),
         ("Guía de columnas:", Font(name="Arial", size=11, bold=True, color="FFFFFF"), fill_cafe, 22),
         ("nombre              → Nombre corto del producto", Font(name="Arial", size=10, color="333333"), None, 18),
@@ -233,15 +237,15 @@ class ProductorAdmin(admin.ModelAdmin):
         ctx = _contexto_invitacion(productor, request)
         html = render_to_string('emails/invitacion_productor.html', ctx)
         msg = EmailMultiAlternatives(
-            subject=f'Tu marca en dePicknick — {productor.nombre}',
-            body=f'Hola {productor.nombre}, te presentamos tu perfil en dePicknick.',
-            from_email='dePicknick <onboarding@resend.dev>',
+            subject=f'Tu marca en Sumercá — {productor.nombre}',
+            body=f'Hola {productor.nombre}, te presentamos tu perfil en Sumercá.',
+            from_email='Sumercá <onboarding@resend.dev>',
             to=[productor.email],
         )
         msg.attach_alternative(html, 'text/html')
         excel = _generar_excel_onboarding(productor)
         msg.attach(
-            f'depicknick_catalogo_{productor.nombre.replace(" ", "_")}.xlsx',
+            f'sumerca_catalogo_{productor.nombre.replace(" ", "_")}.xlsx',
             excel,
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         )
@@ -451,3 +455,4 @@ class ConversacionAgenteAdmin(admin.ModelAdmin):
     search_fields = ('usuario__username', 'usuario__email', 'session_id')
     readonly_fields = ('creada',)
     inlines = [MensajeAgenteInline]
+
