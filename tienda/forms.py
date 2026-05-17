@@ -2,6 +2,26 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import Suscripcion, Pedido, PerfilCliente
+import unicodedata
+import re
+
+
+def _generar_username(first_name, last_name):
+    def normalizar(s):
+        s = unicodedata.normalize('NFD', s)
+        s = ''.join(c for c in s if unicodedata.category(c) != 'Mn')
+        s = re.sub(r'[^a-z0-9]', '.', s.lower())
+        return re.sub(r'\.+', '.', s).strip('.')
+
+    base = normalizar(first_name)
+    primer_apellido = normalizar(last_name.split()[0]) if last_name else ''
+    if primer_apellido:
+        base = f"{base}.{primer_apellido}"
+
+    username, n = base, 1
+    while User.objects.filter(username=username).exists():
+        username, n = f"{base}{n}", n + 1
+    return username
 
 
 class SuscripcionForm(forms.ModelForm):
@@ -46,16 +66,17 @@ class RegistroForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email', 'username', 'password1', 'password2', 'telefono')
-        widgets = {
-            'username': forms.TextInput(attrs={'placeholder': 'Ej: maria.garcia'}),
-        }
+        fields = ('first_name', 'last_name', 'email', 'telefono', 'password1', 'password2')
 
     def save(self, commit=True):
         user = super().save(commit=False)
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
         user.email = self.cleaned_data['email']
+        user.username = _generar_username(
+            self.cleaned_data['first_name'],
+            self.cleaned_data['last_name'],
+        )
         if commit:
             user.save()
             PerfilCliente.objects.create(
