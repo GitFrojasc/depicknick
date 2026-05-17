@@ -9,7 +9,11 @@ from openpyxl.styles import Font, PatternFill, Alignment
 from import_export import resources, fields
 from import_export.admin import ImportExportModelAdmin
 from import_export.widgets import ForeignKeyWidget
-from .models import Productor, Categoria, Producto, Canasto, Pedido, ItemPedido, Suscripcion
+from .models import (
+    Productor, Categoria, Producto, Canasto, Pedido, ItemPedido, Suscripcion,
+    Mercado, Receta, IngredienteReceta, Paquete, ItemPaquete,
+    ClienteCorporativo, DocumentoRAG, ConversacionAgente, MensajeAgente,
+)
 
 
 class ProductoResource(resources.ModelResource):
@@ -204,12 +208,26 @@ def _generar_excel_onboarding(productor):
     return output.getvalue()
 
 
+@admin.register(Mercado)
+class MercadoAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'ciudad', 'acopiador', 'activo')
+    list_filter = ('activo',)
+    search_fields = ('nombre', 'ciudad')
+
+
 @admin.register(Productor)
 class ProductorAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'ubicacion', 'email', 'telefono', 'activo')
-    list_filter = ('activo',)
+    list_display = ('nombre', 'mercado', 'estado_editorial', 'tipo_acuerdo', 'puntaje', 'ubicacion', 'email', 'activo')
+    list_filter = ('mercado', 'estado_editorial', 'tipo_acuerdo', 'activo')
     search_fields = ('nombre', 'ubicacion', 'email')
+    readonly_fields = ('puntaje',)
     actions = ['enviar_invitacion', 'previsualizar_invitacion']
+
+    @admin.display(description='Completitud')
+    def puntaje(self, obj):
+        p = obj.puntaje_completitud
+        color = '#38a169' if p >= 80 else '#dd6b20' if p >= 50 else '#e53e3e'
+        return format_html('<span style="color:{};font-weight:bold;">{}%</span>', color, p)
 
     def _enviar_correo_productor(self, request, productor):
         ctx = _contexto_invitacion(productor, request)
@@ -273,27 +291,45 @@ class CategoriaAdmin(admin.ModelAdmin):
 @admin.register(Producto)
 class ProductoAdmin(ImportExportModelAdmin):
     resource_classes = [ProductoResource]
-    list_display = ('nombre', 'categoria', 'productor', 'precio', 'unidad', 'indicador_stock', 'stock', 'destacado', 'certificado', 'disponible')
-    list_filter = ('categoria', 'disponible', 'destacado', 'certificado', 'productor')
+    list_display = ('nombre', 'categoria', 'productor', 'precio', 'precio_final_display', 'unidad', 'indicador_stock', 'stock', 'estado_editorial', 'alerta_venc', 'destacado', 'disponible')
+    list_filter = ('categoria', 'estado_editorial', 'disponible', 'destacado', 'certificado', 'productor')
     search_fields = ('nombre', 'descripcion')
     list_editable = ('precio', 'stock', 'destacado')
-    readonly_fields = ('disponible', 'creado')
+    readonly_fields = ('disponible', 'creado', 'alerta_venc', 'precio_final_display')
     fieldsets = (
         ('Información', {
-            'fields': ('nombre', 'descripcion', 'historia', 'productor', 'categoria')
+            'fields': ('nombre', 'descripcion', 'historia', 'sugerencias_uso', 'productor', 'categoria', 'estado_editorial')
         }),
         ('Precio y presentación', {
             'fields': ('precio', 'unidad', 'precio_mayor', 'unidad_mayor', 'foto', 'video_url', 'destacado', 'certificado')
         }),
+        ('Temporada y vencimiento', {
+            'fields': ('meses_temporada', 'fecha_vencimiento', 'alerta_venc', 'precio_final_display'),
+        }),
         ('Inventario', {
             'fields': ('stock', 'stock_minimo', 'disponible'),
-            'description': 'El producto se desactiva automáticamente cuando el stock llega a 0. Se notifica al productor.'
         }),
         ('Sistema', {
             'fields': ('creado',),
             'classes': ('collapse',)
         }),
     )
+
+    @admin.display(description='Alerta venc.')
+    def alerta_venc(self, obj):
+        a = obj.alerta_vencimiento
+        if a == 'rojo':
+            return format_html('<span style="color:#e53e3e;font-weight:bold;">🔴 Vence pronto</span>')
+        if a == 'amarillo':
+            return format_html('<span style="color:#dd6b20;font-weight:bold;">🟡 {} días</span>', obj.dias_para_vencer)
+        return '–'
+
+    @admin.display(description='Precio final')
+    def precio_final_display(self, obj):
+        pf = obj.precio_final
+        if pf < obj.precio:
+            return format_html('<span style="color:#e53e3e;font-weight:bold;">${:,.0f}</span> <small style="text-decoration:line-through;color:#999;">${:,.0f}</small>', pf, obj.precio)
+        return format_html('${:,.0f}', obj.precio)
 
     @admin.display(description='Stock')
     def indicador_stock(self, obj):
@@ -347,3 +383,71 @@ class SuscripcionAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+
+
+class IngredienteRecetaInline(admin.TabularInline):
+    model = IngredienteReceta
+    extra = 1
+
+
+@admin.register(Receta)
+class RecetaAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'temporada_display', 'disponible_ahora', 'creada')
+    list_filter = ('creada',)
+    search_fields = ('nombre', 'descripcion')
+    inlines = [IngredienteRecetaInline]
+    readonly_fields = ('disponible_ahora',)
+
+    @admin.display(description='Temporada', boolean=False)
+    def temporada_display(self, obj):
+        meses = {1:'Ene',2:'Feb',3:'Mar',4:'Abr',5:'May',6:'Jun',
+                 7:'Jul',8:'Ago',9:'Sep',10:'Oct',11:'Nov',12:'Dic'}
+        return ', '.join(meses.get(m, str(m)) for m in (obj.meses_temporada or []))
+
+    @admin.display(description='Disponible ahora', boolean=True)
+    def disponible_ahora(self, obj):
+        return obj.disponible_ahora
+
+
+class ItemPaqueteInline(admin.TabularInline):
+    model = ItemPaquete
+    extra = 1
+
+
+@admin.register(Paquete)
+class PaqueteAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'tipo', 'mercado', 'activo', 'creado')
+    list_filter = ('tipo', 'activo')
+    search_fields = ('nombre', 'descripcion')
+    inlines = [ItemPaqueteInline]
+
+
+@admin.register(ClienteCorporativo)
+class ClienteCorporativoAdmin(admin.ModelAdmin):
+    list_display = ('nombre_empresa', 'mercado', 'contacto', 'descuento_porcentaje', 'limite_credito', 'activo')
+    list_filter = ('mercado', 'activo')
+    search_fields = ('nombre_empresa', 'nit')
+
+
+@admin.register(DocumentoRAG)
+class DocumentoRAGAdmin(admin.ModelAdmin):
+    list_display = ('titulo', 'tipo', 'mercado', 'activo', 'actualizado')
+    list_filter = ('tipo', 'mercado', 'activo')
+    search_fields = ('titulo', 'contenido')
+    readonly_fields = ('actualizado',)
+
+
+class MensajeAgenteInline(admin.TabularInline):
+    model = MensajeAgente
+    extra = 0
+    readonly_fields = ('rol', 'contenido', 'creado')
+    can_delete = False
+
+
+@admin.register(ConversacionAgente)
+class ConversacionAgenteAdmin(admin.ModelAdmin):
+    list_display = ('id', 'usuario', 'mercado', 'session_id', 'creada')
+    list_filter = ('mercado',)
+    search_fields = ('usuario__username', 'usuario__email', 'session_id')
+    readonly_fields = ('creada',)
+    inlines = [MensajeAgenteInline]
