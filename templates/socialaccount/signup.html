@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Confirmar cuenta — dePicknick{% endblock %}
+
+{% block extra_css %}
+<style>
+  .auth-page {
+    max-width: 420px;
+    margin: 3rem auto;
+    padding: 0 1.5rem 4rem;
+    text-align: center;
+  }
+  .auth-page h1 { font-size: 1.8rem; color: var(--verde); margin-bottom: .4rem; }
+  .auth-page .subtitulo {
+    font-family: Arial, sans-serif;
+    color: var(--gris);
+    font-size: .9rem;
+    margin-bottom: 2rem;
+  }
+  .auth-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 2px 16px rgba(0,0,0,.06);
+  }
+  .google-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    text-align: left;
+  }
+  .google-info .nombre {
+    font-family: Arial, sans-serif;
+    font-weight: 600;
+    color: #2c2c2c;
+    font-size: .95rem;
+  }
+  .google-info .email {
+    font-family: Arial, sans-serif;
+    color: var(--gris);
+    font-size: .83rem;
+  }
+  .btn-confirmar {
+    width: 100%;
+    background: var(--verde);
+    color: #fff;
+    border: none;
+    padding: .9rem;
+    border-radius: 30px;
+    font-family: Arial, sans-serif;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .btn-confirmar:hover { background: #235c40; }
+  .btn-cancelar {
+    display: block;
+    margin-top: .8rem;
+    font-family: Arial, sans-serif;
+    font-size: .85rem;
+    color: var(--gris);
+    text-decoration: none;
+  }
+  .btn-cancelar:hover { color: var(--terracota); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <h1>¡Casi listo!</h1>
+  <p class="subtitulo">Confirma tu cuenta de Google para continuar</p>
+
+  <div class="auth-card">
+    <div class="google-info">
+      <svg width="32" height="32" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      <div>
+        <div class="nombre">{{ user.get_full_name|default:user.username }}</div>
+        <div class="email">{{ user.email }}</div>
+      </div>
+    </div>
+
+    <form method="POST" action="{% url 'socialaccount_signup' %}">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn-confirmar">Crear mi cuenta en dePicknick</button>
+    </form>
+    <a href="/" class="btn-cancelar">← Cancelar</a>
+  </div>
+</div>
+{% endblock %}
