@@ -3,7 +3,7 @@ from django.views.decorators.http import require_POST
 from django.conf import settings
 from django.contrib.auth import login
 from .forms import SuscripcionForm, CheckoutForm, RegistroForm
-from .models import Producto, Pedido, ItemPedido, DireccionEnvio, PerfilCliente
+from .models import Producto, Pedido, ItemPedido, DireccionEnvio, PerfilCliente, Productor, Mercado
 from urllib.parse import quote
 import stripe
 
@@ -56,6 +56,13 @@ CANASTOS_INFO = {
         'descripcion': 'El canasto físico + una selección especial para tu salida. Para parques, fincas, y momentos que importan.',
         'color': 'linear-gradient(135deg, #e3f2fd, #bbdefb)',
     },
+    'artesanias': {
+        'nombre': 'Artesanías',
+        'emoji': '🧶',
+        'tag': 'Hecho a mano',
+        'descripcion': 'Tejidos, cerámica, arte en hilo y piezas únicas de artesanos del Eje Cafetero.',
+        'color': 'linear-gradient(135deg, #fff8e1, #ffe082)',
+    },
 }
 
 
@@ -68,10 +75,18 @@ def inicio(request):
         return render(request, 'index.html', {'form': form, 'modal_abierto': True})
     form = SuscripcionForm()
     suscrito = request.GET.get('suscrito') == 'ok'
+    productores = (
+        Productor.objects
+        .filter(activo=True)
+        .select_related('mercado')
+        .order_by('nombre')
+    )
     return render(request, 'index.html', {
         'form': form,
         'suscrito': suscrito,
         'carrito_count': _carrito_count(request),
+        'productores': productores,
+        'total_productores': productores.count(),
     })
 
 

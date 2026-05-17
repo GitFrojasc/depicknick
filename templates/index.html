@@ -1,636 +1,303 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>De Picknick — Del Campo a Tu Mesa</title>
+  <title>dePicknick — Pereira de Cosecha · Del campo a tu puerta</title>
   <style>
     :root {
-      --verde-oscuro: #2d5a27;
-      --verde-medio: #4a7c59;
-      --verde-claro: #8db87a;
-      --crema: #f5f0e8;
-      --crema-oscuro: #e8e0d0;
-      --terracota: #c4622d;
-      --terracota-claro: #e8835a;
-      --marron: #5c3d2e;
-      --texto: #2a2a2a;
-      --gris: #666;
+      --verde:      #2d5a27;
+      --verde-m:    #4a7c59;
+      --verde-c:    #74b97a;
+      --crema:      #f5f0e8;
+      --crema-d:    #e8e0d0;
+      --terracota:  #c4622d;
+      --miel:       #d4a017;
+      --marron:     #3d2b1f;
+      --gris:       #666;
+      --blanco:     #fff;
     }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Georgia', serif;
-      color: var(--texto);
-      background: var(--crema);
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: Georgia, serif; color: #2c2c2c; background: var(--crema); }
 
     /* ── NAV ── */
     nav {
-      background: var(--verde-oscuro);
+      background: var(--verde);
       padding: 0 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 64px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px; position: sticky; top: 0; z-index: 200;
+      box-shadow: 0 2px 12px rgba(0,0,0,.25);
     }
-
-    .logo {
-      font-size: 22px;
-      color: var(--crema);
-      letter-spacing: 2px;
-      font-style: italic;
+    .logo { font-size: 1.35rem; color: #fff; text-decoration: none; font-style: italic; letter-spacing: .5px; }
+    .logo span { color: var(--verde-c); font-style: normal; font-weight: bold; }
+    .nav-r { display: flex; gap: .8rem; align-items: center; }
+    .nav-r a { color: rgba(255,255,255,.82); text-decoration: none; font-family: Arial, sans-serif; font-size: .82rem; transition: color .2s; }
+    .nav-r a:hover { color: #fff; }
+    .nav-r .btn-nav { background: rgba(255,255,255,.15); padding: .3rem .75rem; border-radius: 20px; }
+    .nav-r .btn-nav:hover { background: rgba(255,255,255,.25); color: #fff; }
+    .nav-carrito {
+      background: var(--terracota); color: #fff !important; padding: .35rem .85rem;
+      border-radius: 20px; display: flex; align-items: center; gap: .3rem;
     }
-
-    .logo span {
-      color: var(--verde-claro);
-      font-style: normal;
-      font-weight: bold;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
-    }
-
-    .nav-links a {
-      color: var(--crema-oscuro);
-      text-decoration: none;
-      font-family: Arial, sans-serif;
-      font-size: 13px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      transition: color 0.2s;
-    }
-
-    .nav-links a:hover { color: var(--verde-claro); }
-
-    .carrito-btn {
-      background: var(--terracota);
-      color: white;
-      border: none;
-      padding: 8px 18px;
-      border-radius: 20px;
-      font-family: Arial, sans-serif;
-      font-size: 13px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+    .nav-carrito:hover { background: #a84f24 !important; }
+    .badge { background: var(--miel); color: #2c2c2c; border-radius: 50%; width: 18px; height: 18px;
+             display: inline-flex; align-items: center; justify-content: center; font-size: .7rem; font-weight: bold; }
 
     /* ── HERO ── */
     .hero {
-      background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 60%, var(--verde-claro) 100%);
-      min-height: 88vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 4rem 2rem;
-      position: relative;
-      overflow: hidden;
+      position: relative; min-height: 92vh;
+      display: flex; align-items: flex-end; overflow: hidden;
     }
-
-    .hero::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: url("{% static 'img/mercado/m3.jpg' %}") center/cover no-repeat;
     }
-
-    .hero-content { position: relative; max-width: 700px; }
-
-    .hero-badge {
-      display: inline-block;
-      background: rgba(255,255,255,0.15);
-      color: var(--crema);
-      font-family: Arial, sans-serif;
-      font-size: 11px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      padding: 6px 16px;
-      border-radius: 20px;
-      margin-bottom: 1.5rem;
-      border: 1px solid rgba(255,255,255,0.2);
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(20,40,20,.88) 0%, rgba(20,40,20,.45) 50%, rgba(20,40,20,.15) 100%);
     }
-
+    .hero-content {
+      position: relative; padding: 4rem 2rem 5rem; max-width: 760px; margin: 0 auto; width: 100%;
+    }
+    .hero-eyebrow {
+      display: inline-block; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25);
+      color: rgba(255,255,255,.9); font-family: Arial, sans-serif; font-size: .72rem;
+      letter-spacing: 2.5px; text-transform: uppercase; padding: .35rem 1rem; border-radius: 20px;
+      margin-bottom: 1.4rem;
+    }
     .hero h1 {
-      font-size: clamp(2.5rem, 6vw, 4.5rem);
-      color: white;
-      line-height: 1.1;
-      margin-bottom: 1.2rem;
-      font-style: italic;
+      font-size: clamp(2.4rem, 6vw, 4.2rem); color: #fff; line-height: 1.1;
+      margin-bottom: 1.2rem; font-style: italic;
     }
-
-    .hero h1 em {
-      color: var(--verde-claro);
-      font-style: normal;
-    }
-
+    .hero h1 strong { font-style: normal; color: var(--verde-c); }
     .hero p {
-      font-family: Arial, sans-serif;
-      font-size: 18px;
-      color: rgba(255,255,255,0.85);
-      line-height: 1.6;
-      margin-bottom: 2.5rem;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
+      font-family: Arial, sans-serif; font-size: 1.05rem; color: rgba(255,255,255,.82);
+      line-height: 1.65; margin-bottom: 2rem; max-width: 560px;
     }
-
-    .hero-btns {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
+    .hero-btns { display: flex; gap: .8rem; flex-wrap: wrap; }
+    .btn-hero-p {
+      background: var(--terracota); color: #fff; padding: .85rem 2rem; border-radius: 30px;
+      text-decoration: none; font-family: Arial, sans-serif; font-size: .95rem; font-weight: bold;
+      transition: background .2s, transform .1s;
     }
-
-    .btn-primary {
-      background: var(--terracota);
-      color: white;
-      padding: 14px 32px;
-      border-radius: 30px;
-      text-decoration: none;
-      font-family: Arial, sans-serif;
-      font-size: 15px;
-      font-weight: bold;
-      transition: background 0.2s, transform 0.1s;
+    .btn-hero-p:hover { background: #a84f24; transform: translateY(-2px); }
+    .btn-hero-s {
+      background: transparent; color: #fff; padding: .85rem 2rem; border-radius: 30px;
+      text-decoration: none; font-family: Arial, sans-serif; font-size: .95rem;
+      border: 2px solid rgba(255,255,255,.45); transition: border-color .2s;
     }
+    .btn-hero-s:hover { border-color: #fff; }
 
-    .btn-primary:hover { background: var(--terracota-claro); transform: translateY(-1px); }
-
-    .btn-secondary {
-      background: transparent;
-      color: white;
-      padding: 14px 32px;
-      border-radius: 30px;
-      text-decoration: none;
-      font-family: Arial, sans-serif;
-      font-size: 15px;
-      border: 2px solid rgba(255,255,255,0.5);
-      transition: border-color 0.2s;
+    /* ── STATS BAR ── */
+    .stats-bar {
+      background: var(--verde); color: #fff;
+      display: flex; justify-content: center; gap: 0; flex-wrap: wrap;
     }
-
-    .btn-secondary:hover { border-color: white; }
-
-    /* ── SECCIÓN: LOS 4 CANASTOS ── */
-    .canastos-section {
-      padding: 5rem 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
+    .stat {
+      padding: 1.1rem 2.5rem; text-align: center; border-right: 1px solid rgba(255,255,255,.15);
     }
+    .stat:last-child { border-right: none; }
+    .stat-n { font-size: 1.6rem; font-weight: bold; color: var(--verde-c); }
+    .stat-l { font-family: Arial, sans-serif; font-size: .75rem; opacity: .8; letter-spacing: 1px; text-transform: uppercase; margin-top: .1rem; }
 
-    .section-header {
-      text-align: center;
-      margin-bottom: 3.5rem;
-    }
-
-    .section-tag {
-      font-family: Arial, sans-serif;
-      font-size: 11px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--verde-medio);
-      margin-bottom: 0.8rem;
-    }
-
-    .section-header h2 {
-      font-size: 2.2rem;
-      color: var(--marron);
-      margin-bottom: 0.8rem;
-    }
-
-    .section-header p {
-      font-family: Arial, sans-serif;
-      color: var(--gris);
-      font-size: 16px;
-      max-width: 500px;
-      margin: 0 auto;
-    }
-
-    .canastos-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .canasto-card {
-      background: white;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 2px 20px rgba(0,0,0,0.06);
-      transition: transform 0.2s, box-shadow 0.2s;
-      cursor: pointer;
-    }
-
-    .canasto-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-    }
-
-    .canasto-imagen {
-      height: 180px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 5rem;
-    }
-
-    .canasto-card:nth-child(1) .canasto-imagen { background: linear-gradient(135deg, #e8f5e2, #c8e6c0); }
-    .canasto-card:nth-child(2) .canasto-imagen { background: linear-gradient(135deg, #fff3e0, #ffe0b2); }
-    .canasto-card:nth-child(3) .canasto-imagen { background: linear-gradient(135deg, #fce4ec, #f8bbd0); }
-    .canasto-card:nth-child(4) .canasto-imagen { background: linear-gradient(135deg, #e3f2fd, #bbdefb); }
-
-    .canasto-body { padding: 1.4rem; }
-
-    .canasto-tag {
-      font-family: Arial, sans-serif;
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--verde-medio);
-      margin-bottom: 6px;
-    }
-
-    .canasto-body h3 {
-      font-size: 1.25rem;
-      color: var(--marron);
-      margin-bottom: 8px;
-    }
-
-    .canasto-body p {
-      font-family: Arial, sans-serif;
-      font-size: 13px;
-      color: var(--gris);
-      line-height: 1.5;
+    /* ── GALERÍA ── */
+    .galeria-section { padding: 3.5rem 0; background: var(--crema-d); overflow: hidden; }
+    .galeria-label {
+      text-align: center; font-family: Arial, sans-serif; font-size: .72rem;
+      letter-spacing: 3px; text-transform: uppercase; color: var(--verde-m);
       margin-bottom: 1.2rem;
     }
-
-    .canasto-cta {
-      display: inline-block;
-      background: var(--verde-oscuro);
-      color: white;
-      padding: 8px 20px;
-      border-radius: 20px;
-      font-family: Arial, sans-serif;
-      font-size: 13px;
-      text-decoration: none;
-      transition: background 0.2s;
+    .galeria-scroll {
+      display: flex; gap: .8rem; overflow-x: auto; padding: 0 2rem;
+      scrollbar-width: none;
     }
-
-    .canasto-cta:hover { background: var(--verde-medio); }
-
-    /* ── CICLO CIRCULAR (La Despensa) ── */
-    .ciclo-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 1rem;
+    .galeria-scroll::-webkit-scrollbar { display: none; }
+    .galeria-foto {
+      flex: 0 0 240px; height: 180px; border-radius: 12px; object-fit: cover;
+      filter: saturate(.9); transition: filter .25s, transform .25s;
     }
+    .galeria-foto:hover { filter: saturate(1.2); transform: scale(1.02); }
 
-    .ciclo-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: #f0f7ee;
-      border: 1px solid #c8e6c0;
-      color: var(--verde-oscuro);
-      font-family: Arial, sans-serif;
-      font-size: 10px;
-      font-weight: bold;
-      letter-spacing: 0.5px;
-      padding: 4px 10px;
-      border-radius: 12px;
-      text-transform: uppercase;
+    /* ── SECTION HEADER ── */
+    .sh { text-align: center; margin-bottom: 2.8rem; }
+    .sh-tag { font-family: Arial, sans-serif; font-size: .72rem; letter-spacing: 3px;
+              text-transform: uppercase; color: var(--verde-m); margin-bottom: .6rem; }
+    .sh h2 { font-size: 2rem; color: var(--marron); margin-bottom: .7rem; }
+    .sh p { font-family: Arial, sans-serif; color: var(--gris); font-size: .95rem;
+            max-width: 520px; margin: 0 auto; line-height: 1.6; }
+
+    /* ── PRODUCTORES ── */
+    .productores-section { padding: 4.5rem 2rem; max-width: 1200px; margin: 0 auto; }
+    .prod-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.2rem;
     }
+    .prod-card {
+      background: #fff; border-radius: 14px; overflow: hidden;
+      box-shadow: 0 2px 16px rgba(0,0,0,.06); transition: transform .2s, box-shadow .2s;
+    }
+    .prod-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(0,0,0,.12); }
+    .prod-foto {
+      height: 140px; background: linear-gradient(135deg, #d4edda, #a8d5b5);
+      display: flex; align-items: center; justify-content: center; font-size: 3.5rem;
+      position: relative; overflow: hidden;
+    }
+    .prod-foto img { width: 100%; height: 100%; object-fit: cover; }
+    .prod-acuerdo {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(45,90,39,.85); color: #fff; font-family: Arial, sans-serif;
+      font-size: .6rem; letter-spacing: 1px; text-transform: uppercase;
+      padding: .2rem .5rem; border-radius: 8px;
+    }
+    .prod-body { padding: 1rem 1.1rem; }
+    .prod-cat { font-family: Arial, sans-serif; font-size: .65rem; letter-spacing: 1.5px;
+                text-transform: uppercase; color: var(--verde-m); margin-bottom: .3rem; }
+    .prod-nombre { font-size: 1rem; color: var(--marron); margin-bottom: .4rem; line-height: 1.2; }
+    .prod-ubi { font-family: Arial, sans-serif; font-size: .75rem; color: var(--gris); margin-bottom: .5rem; }
+    .prod-historia { font-family: Arial, sans-serif; font-size: .78rem; color: #555; line-height: 1.45;
+                     display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
-    .ciclo-pasos {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+    /* ── PARA PRODUCTORES ── */
+    .pitch-section {
+      background: var(--verde); padding: 5rem 2rem; position: relative; overflow: hidden;
+    }
+    .pitch-section::before {
+      content: '';position: absolute; inset: 0;
+      background: url("{% static 'img/mercado/m4.jpg' %}") center/cover no-repeat;
+      opacity: .12;
+    }
+    .pitch-inner { position: relative; max-width: 1000px; margin: 0 auto; }
+    .pitch-top { text-align: center; margin-bottom: 3.5rem; }
+    .pitch-eyebrow {
+      display: inline-block; background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3);
+      color: rgba(255,255,255,.9); font-family: Arial, sans-serif; font-size: .72rem;
+      letter-spacing: 2.5px; text-transform: uppercase; padding: .35rem 1rem; border-radius: 20px;
       margin-bottom: 1.2rem;
     }
-
-    .ciclo-paso {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      font-family: Arial, sans-serif;
-      font-size: 12px;
-      color: var(--gris);
-      line-height: 1.4;
+    .pitch-top h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); color: #fff; font-style: italic; margin-bottom: 1rem; }
+    .pitch-top h2 strong { font-style: normal; color: var(--verde-c); }
+    .pitch-top p { font-family: Arial, sans-serif; color: rgba(255,255,255,.78); font-size: 1rem; line-height: 1.65; max-width: 600px; margin: 0 auto; }
+    .pitch-vs {
+      display: grid; grid-template-columns: 1fr auto 1fr; gap: 1.5rem; align-items: center;
+      margin-bottom: 3rem;
     }
-
-    .ciclo-paso-icono {
-      font-size: 14px;
-      flex-shrink: 0;
-      margin-top: 1px;
+    .pitch-lado {
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12);
+      border-radius: 16px; padding: 1.8rem;
     }
-
-    .canasto-card.despensa-card {
-      border: 2px solid #c8e6c0;
+    .pitch-lado h4 { font-family: Arial, sans-serif; font-size: .72rem; letter-spacing: 2px;
+                     text-transform: uppercase; margin-bottom: 1rem; opacity: .7; color: #fff; }
+    .pitch-lado ul { list-style: none; }
+    .pitch-lado ul li {
+      font-family: Arial, sans-serif; font-size: .9rem; color: rgba(255,255,255,.8);
+      padding: .45rem 0; border-bottom: 1px solid rgba(255,255,255,.08);
+      display: flex; align-items: flex-start; gap: .6rem;
     }
-
-    .despensa-card .canasto-tag {
-      color: var(--verde-oscuro);
-      font-weight: bold;
+    .pitch-lado ul li:last-child { border-bottom: none; }
+    .pitch-lado.antes { border-color: rgba(255,100,100,.25); }
+    .pitch-lado.antes li::before { content: '—'; color: rgba(255,120,120,.7); flex-shrink: 0; }
+    .pitch-lado.despues { border-color: rgba(116,185,122,.4); background: rgba(116,185,122,.1); }
+    .pitch-lado.despues li::before { content: '✓'; color: var(--verde-c); flex-shrink: 0; font-weight: bold; }
+    .pitch-flecha { text-align: center; color: var(--verde-c); font-size: 2rem; }
+    .pitch-features {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem; margin-bottom: 2.5rem;
     }
-
-    /* ── SECCIÓN: LA HISTORIA ── */
-    .historia-section {
-      background: var(--verde-oscuro);
-      padding: 5rem 2rem;
-      text-align: center;
+    .pitch-feat {
+      background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1);
+      border-radius: 12px; padding: 1.3rem; text-align: center;
     }
-
-    .historia-section .section-tag { color: var(--verde-claro); }
-
-    .historia-section h2 {
-      font-size: 2.2rem;
-      color: white;
-      margin-bottom: 1rem;
-      font-style: italic;
+    .pitch-feat-icon { font-size: 1.8rem; margin-bottom: .6rem; }
+    .pitch-feat h5 { color: #fff; font-size: .95rem; margin-bottom: .3rem; }
+    .pitch-feat p { font-family: Arial, sans-serif; font-size: .78rem; color: rgba(255,255,255,.65); line-height: 1.4; }
+    .pitch-cta { text-align: center; }
+    .btn-pitch {
+      display: inline-block; background: var(--terracota); color: #fff; padding: 1rem 2.5rem;
+      border-radius: 30px; text-decoration: none; font-family: Arial, sans-serif;
+      font-size: 1rem; font-weight: bold; transition: background .2s, transform .15s;
     }
+    .btn-pitch:hover { background: #a84f24; transform: translateY(-2px); }
 
-    .historia-section p {
-      font-family: Arial, sans-serif;
-      color: rgba(255,255,255,0.75);
-      font-size: 16px;
-      max-width: 600px;
-      margin: 0 auto 3rem;
-      line-height: 1.7;
+    /* ── CANASTOS ── */
+    .canastos-section { padding: 4.5rem 2rem; max-width: 1200px; margin: 0 auto; }
+    .can-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.2rem; }
+    .can-card {
+      background: #fff; border-radius: 14px; overflow: hidden;
+      box-shadow: 0 2px 16px rgba(0,0,0,.06); transition: transform .2s, box-shadow .2s;
     }
-
-    .productores-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.5rem;
-      max-width: 900px;
-      margin: 0 auto;
+    .can-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(0,0,0,.12); }
+    .can-img { height: 130px; display: flex; align-items: center; justify-content: center; font-size: 4rem; }
+    .can-body { padding: 1.1rem 1.2rem; }
+    .can-tag { font-family: Arial, sans-serif; font-size: .65rem; letter-spacing: 1.5px;
+               text-transform: uppercase; color: var(--verde-m); margin-bottom: .3rem; }
+    .can-body h3 { font-size: 1.05rem; color: var(--marron); margin-bottom: .5rem; }
+    .can-body p { font-family: Arial, sans-serif; font-size: .8rem; color: var(--gris); line-height: 1.5; margin-bottom: 1rem; }
+    .can-link {
+      display: inline-block; background: var(--verde); color: #fff; padding: .45rem 1rem;
+      border-radius: 20px; font-family: Arial, sans-serif; font-size: .8rem; text-decoration: none;
+      transition: background .2s;
     }
+    .can-link:hover { background: var(--verde-m); }
+    .can-card.despensa { border: 2px solid #a8d5b5; }
+    .can-card.artesanias .can-img { background: linear-gradient(135deg, #fff8e1, #ffe082); }
 
-    .productor-card {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 12px;
-      padding: 1.5rem;
-      text-align: left;
-      transition: background 0.2s;
+    /* ── CÓMO FUNCIONA ── */
+    .como-section { background: var(--crema-d); padding: 4.5rem 2rem; }
+    .como-inner { max-width: 900px; margin: 0 auto; }
+    .pasos { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; margin-top: 2.5rem; }
+    .paso { text-align: center; }
+    .paso-n {
+      width: 48px; height: 48px; background: var(--verde); color: #fff; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+      font-weight: bold; margin: 0 auto 1rem;
     }
-
-    .productor-card:hover { background: rgba(255,255,255,0.14); }
-
-    .productor-emoji { font-size: 2.5rem; margin-bottom: 0.8rem; }
-
-    .productor-card h4 {
-      color: white;
-      font-size: 1rem;
-      margin-bottom: 4px;
-    }
-
-    .productor-card .ubicacion {
-      font-family: Arial, sans-serif;
-      font-size: 11px;
-      color: var(--verde-claro);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-
-    .productor-card p {
-      font-family: Arial, sans-serif;
-      font-size: 12px;
-      color: rgba(255,255,255,0.6);
-      line-height: 1.5;
-      margin: 0;
-    }
-
-    .productor-card .ver-historia {
-      display: inline-block;
-      margin-top: 12px;
-      font-family: Arial, sans-serif;
-      font-size: 11px;
-      color: var(--verde-claro);
-      text-decoration: none;
-      border-bottom: 1px solid var(--verde-claro);
-      padding-bottom: 1px;
-    }
-
-    /* ── SECCIÓN: CÓMO FUNCIONA ── */
-    .como-section {
-      padding: 5rem 2rem;
-      max-width: 900px;
-      margin: 0 auto;
-      text-align: center;
-    }
-
-    .pasos-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 2rem;
-      margin-top: 3rem;
-    }
-
-    .paso {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .paso-numero {
-      width: 52px;
-      height: 52px;
-      background: var(--verde-oscuro);
-      color: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.3rem;
-      font-weight: bold;
-    }
-
-    .paso h4 {
-      font-size: 1rem;
-      color: var(--marron);
-    }
-
-    .paso p {
-      font-family: Arial, sans-serif;
-      font-size: 13px;
-      color: var(--gris);
-      line-height: 1.5;
-    }
-
-    /* ── SECCIÓN: BANNER NACIONAL ── */
-    .nacional-section {
-      background: var(--crema-oscuro);
-      padding: 3rem 2rem;
-      text-align: center;
-    }
-
-    .nacional-section h3 {
-      font-size: 1.4rem;
-      color: var(--marron);
-      margin-bottom: 0.5rem;
-    }
-
-    .nacional-section p {
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      color: var(--gris);
-      margin-bottom: 1.5rem;
-    }
-
-    .ciudades {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .ciudad-tag {
-      background: white;
-      border: 1px solid var(--crema-oscuro);
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-family: Arial, sans-serif;
-      font-size: 13px;
-      color: var(--verde-oscuro);
-    }
+    .paso h4 { font-size: .98rem; color: var(--marron); margin-bottom: .4rem; }
+    .paso p { font-family: Arial, sans-serif; font-size: .8rem; color: var(--gris); line-height: 1.5; }
 
     /* ── FOOTER ── */
-    footer {
-      background: var(--marron);
-      color: rgba(255,255,255,0.7);
-      text-align: center;
-      padding: 2.5rem;
-      font-family: Arial, sans-serif;
-      font-size: 13px;
-    }
-
-    footer .footer-logo {
-      font-family: Georgia, serif;
-      font-size: 20px;
-      color: white;
-      font-style: italic;
-      margin-bottom: 0.5rem;
-    }
-
-    footer a { color: var(--verde-claro); text-decoration: none; }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 600px) {
-      .nav-links { display: none; }
-      .hero h1 { font-size: 2rem; }
-      .hero p { font-size: 15px; }
-      .hero-btns { flex-direction: column; align-items: center; }
-      .btn-primary, .btn-secondary { width: 100%; max-width: 300px; text-align: center; }
-      .canastos-section { padding: 3rem 1rem; }
-      .canastos-grid { grid-template-columns: 1fr; }
-      .modal { padding: 1.8rem 1.2rem; }
-      .como-section { padding: 3rem 1rem; }
-      .pasos-grid { grid-template-columns: 1fr 1fr; }
-      nav { padding: 0 1rem; }
-      .carrito-btn { padding: 7px 12px; font-size: 12px; }
-    }
+    footer { background: var(--marron); color: rgba(255,255,255,.7); text-align: center; padding: 2.5rem; font-family: Arial, sans-serif; font-size: .82rem; }
+    footer .fl { font-family: Georgia, serif; font-size: 1.2rem; color: #fff; font-style: italic; margin-bottom: .4rem; }
+    footer a { color: var(--verde-c); text-decoration: none; }
+    footer a:hover { color: #fff; }
 
     /* ── MODAL ── */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.55);
-      z-index: 200;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-    }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 300; align-items: center; justify-content: center; padding: 1rem; }
     .modal-overlay.activo { display: flex; }
-    .modal {
-      background: white;
-      border-radius: 20px;
-      padding: 2.5rem;
-      max-width: 500px;
-      width: 100%;
-      max-height: 90vh;
-      overflow-y: auto;
-      position: relative;
+    .modal { background: #fff; border-radius: 18px; padding: 2.2rem; max-width: 480px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; }
+    .modal-x { position: absolute; top: 1rem; right: 1.1rem; background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--gris); }
+    .modal h3 { font-size: 1.3rem; color: var(--marron); margin-bottom: .3rem; }
+    .modal .msub { font-family: Arial, sans-serif; font-size: .82rem; color: var(--gris); margin-bottom: 1.5rem; }
+    .fg { margin-bottom: 1rem; }
+    .fg label { display: block; font-family: Arial, sans-serif; font-size: .72rem; font-weight: bold;
+                color: var(--verde); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+    .fg input, .fg select { width: 100%; padding: .6rem .85rem; border: 1.5px solid var(--crema-d);
+                             border-radius: 8px; font-family: Arial, sans-serif; font-size: .9rem;
+                             background: var(--crema); }
+    .fg input:focus, .fg select:focus { outline: none; border-color: var(--verde-m); background: #fff; }
+    .btn-modal { width: 100%; background: var(--verde); color: #fff; border: none; padding: .85rem;
+                 border-radius: 30px; font-family: Arial, sans-serif; font-size: .95rem; font-weight: bold;
+                 cursor: pointer; margin-top: .3rem; transition: background .2s; }
+    .btn-modal:hover { background: var(--verde-m); }
+    .banner-ok { background: #e8f5e2; border: 1.5px solid var(--verde-c); border-radius: 10px;
+                 padding: .9rem 1.2rem; font-family: Arial, sans-serif; font-size: .88rem;
+                 color: var(--verde); text-align: center; margin-bottom: 1.2rem; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      .nav-r .hide-sm { display: none; }
+      .hero-content { padding: 3rem 1.2rem 4rem; }
+      .hero h1 { font-size: 2rem; }
+      .stats-bar { gap: 0; }
+      .stat { padding: .8rem 1.2rem; }
+      .pitch-vs { grid-template-columns: 1fr; }
+      .pitch-flecha { transform: rotate(90deg); }
+      .prod-grid, .can-grid { grid-template-columns: 1fr 1fr; }
     }
-    .modal-cerrar {
-      position: absolute;
-      top: 1rem;
-      right: 1.2rem;
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: var(--gris);
-    }
-    .modal h3 { font-size: 1.4rem; color: var(--marron); margin-bottom: 0.4rem; }
-    .modal .modal-sub { font-family: Arial, sans-serif; font-size: 13px; color: var(--gris); margin-bottom: 1.8rem; }
-    .form-grupo { margin-bottom: 1.1rem; }
-    .form-grupo label {
-      display: block;
-      font-family: Arial, sans-serif;
-      font-size: 12px;
-      font-weight: bold;
-      color: var(--verde-oscuro);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 5px;
-    }
-    .form-grupo input,
-    .form-grupo select,
-    .form-grupo textarea {
-      width: 100%;
-      padding: 10px 14px;
-      border: 1.5px solid var(--crema-oscuro);
-      border-radius: 10px;
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      color: var(--texto);
-      background: var(--crema);
-      transition: border-color 0.2s;
-      resize: none;
-    }
-    .form-grupo input:focus,
-    .form-grupo select:focus,
-    .form-grupo textarea:focus { outline: none; border-color: var(--verde-medio); background: white; }
-    .form-grupo .error { font-family: Arial, sans-serif; font-size: 11px; color: var(--terracota); margin-top: 4px; }
-    .btn-enviar {
-      width: 100%;
-      background: var(--verde-oscuro);
-      color: white;
-      border: none;
-      padding: 14px;
-      border-radius: 30px;
-      font-family: Arial, sans-serif;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 0.5rem;
-      transition: background 0.2s;
-    }
-    .btn-enviar:hover { background: var(--verde-medio); }
-    .banner-exito {
-      background: #e8f5e2;
-      border: 1.5px solid var(--verde-claro);
-      border-radius: 12px;
-      padding: 1rem 1.5rem;
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      color: var(--verde-oscuro);
-      text-align: center;
-      max-width: 600px;
-      margin: 0 auto 2rem;
+    @media (max-width: 420px) {
+      .prod-grid, .can-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -638,265 +305,325 @@
 
 <!-- ════ NAV ════ -->
 <nav>
-  <div class="logo">de<span>Picknick</span></div>
-  <ul class="nav-links">
-    <li><a href="#canastos">Canastos</a></li>
-    <li><a href="#productores">Productores</a></li>
-    <li><a href="#como">Cómo funciona</a></li>
-    <li><a href="#contacto">Contacto</a></li>
-  </ul>
-  <div style="display:flex;align-items:center;gap:.8rem;">
+  <a href="/" class="logo">de<span>Picknick</span></a>
+  <div class="nav-r">
+    <a href="#productores" class="hide-sm">Productores</a>
+    <a href="#canastos" class="hide-sm">Canastos</a>
     {% if user.is_authenticated %}
-      <span style="color:rgba(255,255,255,.75);font-size:.85rem;">Hola, {{ user.get_short_name|default:user.username }}</span>
+      <span style="color:rgba(255,255,255,.75);font-family:Arial,sans-serif;font-size:.82rem;">{{ user.get_short_name|default:user.username }}</span>
       <form method="POST" action="/logout/" style="margin:0;">
         {% csrf_token %}
-        <button type="submit" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:.85rem;cursor:pointer;font-family:inherit;padding:0;">Salir</button>
+        <button type="submit" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:.82rem;cursor:pointer;font-family:Arial,sans-serif;padding:0;">Salir</button>
       </form>
     {% else %}
-      <a href="/login/" style="color:rgba(255,255,255,.8);font-size:.85rem;text-decoration:none;">Entrar</a>
-      <a href="/registro/" style="background:rgba(255,255,255,.15);color:#fff;padding:.32rem .8rem;border-radius:20px;font-size:.85rem;text-decoration:none;">Registrarse</a>
+      <a href="/login/">Entrar</a>
+      <a href="/registro/" class="btn-nav">Registrarse</a>
     {% endif %}
-    <a href="/carrito/" class="carrito-btn" style="text-decoration:none;">
-      🧺 Mi canasto
-      {% if carrito_count %}<span style="background:white;color:var(--terracota);border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;margin-left:4px;">{{ carrito_count }}</span>{% endif %}
+    <a href="/carrito/" class="nav-carrito" style="text-decoration:none;">
+      🧺
+      {% if carrito_count %}<span class="badge">{{ carrito_count }}</span>{% endif %}
     </a>
   </div>
 </nav>
 
 <!-- ════ HERO ════ -->
 <section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
   <div class="hero-content">
-    <div class="hero-badge">Productos del Eje Cafetero · Colombia</div>
-    <h1>Del campo<br>a tu <em>mesa</em></h1>
-    <p>Productos campesinos de extrema calidad — con la historia de quien los cultivó, en cada entrega.</p>
+    <div class="hero-eyebrow">Pereira de Cosecha · Eje Cafetero · Colombia</div>
+    <h1>Del campo<br>directo a tu <strong>puerta</strong></h1>
+    <p>Los mismos productores que ves el primer viernes de cada mes en la Plaza de Bolívar, ahora disponibles los 30 días del mes. Sin intermediarios. Con historia.</p>
     <div class="hero-btns">
-      <a href="#canastos" class="btn-primary">Arma tu canasto</a>
-      <a href="#productores" class="btn-secondary">Conoce los productores</a>
+      <a href="#productores" class="btn-hero-p">Ver productores</a>
+      <a href="#canastos" class="btn-hero-s">Armar mi canasto</a>
     </div>
   </div>
 </section>
 
-<!-- ════ LOS 4 CANASTOS ════ -->
+<!-- ════ STATS BAR ════ -->
+<div class="stats-bar">
+  <div class="stat">
+    <div class="stat-n">{{ total_productores }}+</div>
+    <div class="stat-l">Productores</div>
+  </div>
+  <div class="stat">
+    <div class="stat-n">30</div>
+    <div class="stat-l">Días disponibles</div>
+  </div>
+  <div class="stat">
+    <div class="stat-n">0</div>
+    <div class="stat-l">Intermediarios</div>
+  </div>
+  <div class="stat">
+    <div class="stat-n">100%</div>
+    <div class="stat-l">Al productor</div>
+  </div>
+</div>
+
+<!-- ════ GALERÍA DEL MERCADO ════ -->
+<section class="galeria-section">
+  <div class="galeria-label">Pereira de Cosecha · Plaza de Bolívar · 1er viernes de cada mes</div>
+  <div class="galeria-scroll">
+    <img class="galeria-foto" src="{% static 'img/mercado/m1.jpg' %}" alt="Mercado campesino Pereira">
+    <img class="galeria-foto" src="{% static 'img/mercado/m2.jpg' %}" alt="Productora en el mercado">
+    <img class="galeria-foto" src="{% static 'img/mercado/m3.jpg' %}" alt="Productor con su producto">
+    <img class="galeria-foto" src="{% static 'img/mercado/m4.jpg' %}" alt="Campesino con verduras">
+    <img class="galeria-foto" src="{% static 'img/mercado/m5.jpg' %}" alt="Café especial y productoras">
+    <img class="galeria-foto" src="{% static 'img/mercado/m6.jpg' %}" alt="Evento Pereira de Cosecha">
+    <img class="galeria-foto" src="{% static 'img/mercado/m7.jpg' %}" alt="Plantas y aromáticas">
+    <img class="galeria-foto" src="{% static 'img/mercado/m8.jpg' %}" alt="Flores y plantas">
+  </div>
+</section>
+
+<!-- ════ PRODUCTORES ════ -->
+<section class="productores-section" id="productores">
+  <div class="sh">
+    <div class="sh-tag">Quiénes son</div>
+    <h2>Conoce a los productores</h2>
+    <p>Campesinos, artesanos y emprendedores de los corregimientos de Pereira. Cada perfil tiene su historia.</p>
+  </div>
+
+  <div class="prod-grid">
+    {% for p in productores %}
+    <div class="prod-card">
+      <div class="prod-foto">
+        {% if p.foto %}
+          <img src="{{ p.foto.url }}" alt="{{ p.nombre }}">
+        {% else %}
+          👩‍🌾
+        {% endif %}
+        {% if p.tipo_acuerdo == 'directo' %}
+          <span class="prod-acuerdo">Envío directo</span>
+        {% endif %}
+      </div>
+      <div class="prod-body">
+        <div class="prod-cat">{{ p.mercado.nombre|default:"Pereira" }}</div>
+        <div class="prod-nombre">{{ p.nombre }}</div>
+        {% if p.ubicacion %}
+        <div class="prod-ubi">📍 {{ p.ubicacion }}</div>
+        {% endif %}
+        {% if p.historia %}
+        <div class="prod-historia">{{ p.historia|truncatechars:140 }}</div>
+        {% endif %}
+      </div>
+    </div>
+    {% empty %}
+    <div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--gris);font-family:Arial,sans-serif;">
+      Los productores están llegando. ¡Vuelve pronto!
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ════ PARA PRODUCTORES ════ -->
+<section class="pitch-section" id="productores-cta">
+  <div class="pitch-inner">
+    <div class="pitch-top">
+      <div class="pitch-eyebrow">¿Eres productor de Pereira de Cosecha?</div>
+      <h2>Hoy vendes <strong>1 viernes al mes.</strong><br>Con dePicknick vendes <strong>los 30 días.</strong></h2>
+      <p>Tu historia, tu marca, tus clientes. Nosotros ponemos la tecnología, el catálogo online y el canal de ventas. Tú pones el producto.</p>
+    </div>
+
+    <div class="pitch-vs">
+      <div class="pitch-lado antes">
+        <h4>Sin dePicknick</h4>
+        <ul>
+          <li>1 día de ventas al mes</li>
+          <li>Solo los que van a la plaza</li>
+          <li>Sin presencia digital</li>
+          <li>Sin historial de clientes</li>
+          <li>Compites solo con precio</li>
+        </ul>
+      </div>
+      <div class="pitch-flecha">→</div>
+      <div class="pitch-lado despues">
+        <h4>Con dePicknick</h4>
+        <ul>
+          <li>30 días de ventas al mes</li>
+          <li>Clientes de toda la ciudad</li>
+          <li>Tu perfil y catálogo online</li>
+          <li>Tu historia como diferencial</li>
+          <li>El bot vende por ti 24/7</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="pitch-features">
+      <div class="pitch-feat">
+        <div class="pitch-feat-icon">📸</div>
+        <h5>Tu perfil propio</h5>
+        <p>Foto, historia, video y catálogo de productos. Tu marca en internet.</p>
+      </div>
+      <div class="pitch-feat">
+        <div class="pitch-feat-icon">🛒</div>
+        <h5>Tienda 24/7</h5>
+        <p>Los clientes compran cuando quieren. Tú recibes el pedido listo.</p>
+      </div>
+      <div class="pitch-feat">
+        <div class="pitch-feat-icon">🤖</div>
+        <h5>Agente IA</h5>
+        <p>Conoce tu producto y lo argumenta mejor que cualquier vendedor.</p>
+      </div>
+      <div class="pitch-feat">
+        <div class="pitch-feat-icon">💳</div>
+        <h5>Pagos seguros</h5>
+        <p>PSE, Nequi, Daviplata y tarjeta. El dinero llega directo a ti.</p>
+      </div>
+    </div>
+
+    <div class="pitch-cta">
+      <a href="mailto:hola@depicknick.com?subject=Quiero%20unirme%20a%20dePicknick&body=Hola%2C%20soy%20productor%20de%20Pereira%20de%20Cosecha%20y%20quiero%20unirme%20a%20dePicknick." class="btn-pitch">
+        Quiero unirme a dePicknick →
+      </a>
+      <p style="margin-top:1rem;font-family:Arial,sans-serif;font-size:.78rem;color:rgba(255,255,255,.5);">
+        O escríbenos por WhatsApp · Sin compromiso
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ════ CANASTOS ════ -->
 <section class="canastos-section" id="canastos">
-  <div class="section-header">
-    <div class="section-tag">Elige tu experiencia</div>
-    <h2>Cuatro formas de disfrutar</h2>
-    <p>Cada canasto tiene su propio propósito. Todos comparten la misma filosofía: calidad sin intermediarios.</p>
+  <div class="sh">
+    <div class="sh-tag">Elige tu experiencia</div>
+    <h2>Cinco formas de disfrutar</h2>
+    <p>Cada canasto tiene su momento. Todos comparten la misma filosofía: calidad sin intermediarios.</p>
   </div>
 
-  <div class="canastos-grid">
-
-    <div class="canasto-card despensa-card">
-      <div class="canasto-imagen">🥬</div>
-      <div class="canasto-body">
-        <div class="canasto-tag">♻️ Suscripción periódica</div>
+  <div class="can-grid">
+    <div class="can-card despensa">
+      <div class="can-img" style="background:linear-gradient(135deg,#d4edda,#a8d5b5);">🥬</div>
+      <div class="can-body">
+        <div class="can-tag">♻️ Suscripción semanal</div>
         <h3>La Despensa</h3>
-        <p>Frutas, verduras y productos frescos sin procesar. Del campo a tu cocina, cosechados esta semana.</p>
-
-        <div class="ciclo-badges">
-          <span class="ciclo-badge">🔄 Periódico</span>
-          <span class="ciclo-badge">🧺 Ciclo cerrado</span>
-          <span class="ciclo-badge">🌱 Cero residuos</span>
-        </div>
-
-        <div class="ciclo-pasos">
-          <div class="ciclo-paso">
-            <span class="ciclo-paso-icono">🚚</span>
-            <span>Te traemos tu canasto nuevo con los mismos productos que pediste la vez anterior — tú decides si cambias algo.</span>
-          </div>
-          <div class="ciclo-paso">
-            <span class="ciclo-paso-icono">🧺</span>
-            <span>Recogemos el canasto vacío para lavarlo y reusarlo. Sin empaques, sin desperdicio.</span>
-          </div>
-          <div class="ciclo-paso">
-            <span class="ciclo-paso-icono">🫙</span>
-            <span>Recogemos tu tarro de desechos orgánicos. Lo procesamos para hacer abono y devolvérselo a los productores.</span>
-          </div>
-        </div>
-
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <a href="/canasto/despensa/" class="canasto-cta" style="background:var(--verde-medio);">Ver productos</a>
-          <button onclick="abrirModal()" class="canasto-cta" style="border:none;cursor:pointer;">Suscribirme</button>
+        <p>Frutas, verduras y frescos. Del campo esta semana. Canasto físico que recogemos y reutilizamos.</p>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+          <a href="/canasto/despensa/" class="can-link">Ver productos</a>
+          <button onclick="abrirModal()" class="can-link" style="border:none;cursor:pointer;background:var(--verde-m);">Suscribirme</button>
         </div>
       </div>
     </div>
-
-    <div class="canasto-card">
-      <div class="canasto-imagen">🍯</div>
-      <div class="canasto-body">
-        <div class="canasto-tag">Sin cocina</div>
+    <div class="can-card">
+      <div class="can-img" style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);">🍯</div>
+      <div class="can-body">
+        <div class="can-tag">Sin cocina</div>
         <h3>Soltero Gourmet</h3>
-        <p>Procesados de extrema calidad para disfrutar sin preparar. Mermeladas, quesos, conservas, frutos secos.</p>
-        <a href="/canasto/gourmet/" class="canasto-cta">Explorar productos</a>
+        <p>Mermeladas, quesos, conservas, frutos secos. Calidad extrema para disfrutar sin preparar.</p>
+        <a href="/canasto/gourmet/" class="can-link">Explorar</a>
       </div>
     </div>
-
-    <div class="canasto-card">
-      <div class="canasto-imagen">🎁</div>
-      <div class="canasto-body">
-        <div class="canasto-tag">Para regalar</div>
+    <div class="can-card">
+      <div class="can-img" style="background:linear-gradient(135deg,#fce4ec,#f8bbd0);">🎁</div>
+      <div class="can-body">
+        <div class="can-tag">Para regalar</div>
         <h3>Ancheta</h3>
-        <p>Arma tu ancheta arrastrando los productos que quieras. Presentación premium, entrega en toda Colombia.</p>
-        <a href="/canasto/ancheta/" class="canasto-cta">Crear ancheta</a>
+        <p>Arma tu ancheta como quieras. Presentación premium, entrega en toda Colombia.</p>
+        <a href="/canasto/ancheta/" class="can-link">Crear ancheta</a>
       </div>
     </div>
-
-    <div class="canasto-card">
-      <div class="canasto-imagen">🧺</div>
-      <div class="canasto-body">
-        <div class="canasto-tag">Experiencia</div>
+    <div class="can-card">
+      <div class="can-img" style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);">🧺</div>
+      <div class="can-body">
+        <div class="can-tag">Experiencia</div>
         <h3>De Picknick</h3>
-        <p>El canasto físico + una selección especial para tu salida. Para parques, fincas, y momentos que importan.</p>
-        <a href="/canasto/picknick/" class="canasto-cta">Ver experiencias</a>
+        <p>Canasto físico + selección especial para tu salida al campo, parque o finca.</p>
+        <a href="/canasto/picknick/" class="can-link">Ver experiencias</a>
       </div>
     </div>
-
-  </div>
-</section>
-
-<!-- ════ LA HISTORIA ════ -->
-<section class="historia-section" id="productores">
-  <div class="section-tag">Detrás de cada producto</div>
-  <h2>Conoce a quien lo cultivó</h2>
-  <p>No vendemos ingredientes. Vendemos el trabajo de personas reales con nombres, historias y tierra propia. Cada producto tiene su video.</p>
-
-  <div class="productores-grid">
-
-    <div class="productor-card">
-      <div class="productor-emoji">👩‍🌾</div>
-      <h4>Próximamente</h4>
-      <div class="ubicacion">Eje Cafetero</div>
-      <p>Estamos visitando los mercados campesinos de la región para traerte sus historias.</p>
-      <a href="#" class="ver-historia">Ver avance →</a>
+    <div class="can-card artesanias">
+      <div class="can-img">🧶</div>
+      <div class="can-body">
+        <div class="can-tag">Hecho a mano</div>
+        <h3>Artesanías</h3>
+        <p>Tejidos, cerámica, arte en hilo. Piezas únicas de artesanos del Eje Cafetero.</p>
+        <a href="/canasto/artesanias/" class="can-link">Explorar</a>
+      </div>
     </div>
-
-    <div class="productor-card">
-      <div class="productor-emoji">🍃</div>
-      <h4>Próximamente</h4>
-      <div class="ubicacion">Risaralda</div>
-      <p>Productores de hierbas aromáticas, frutas de temporada y conservas artesanales.</p>
-      <a href="#" class="ver-historia">Ver avance →</a>
-    </div>
-
-    <div class="productor-card">
-      <div class="productor-emoji">🫚</div>
-      <h4>Próximamente</h4>
-      <div class="ubicacion">Colombia</div>
-      <p>Productos con certificación para exportación — calidad que cumple estándares internacionales.</p>
-      <a href="#" class="ver-historia">Ver avance →</a>
-    </div>
-
   </div>
 </section>
 
 <!-- ════ CÓMO FUNCIONA ════ -->
 <section class="como-section" id="como">
-  <div class="section-header">
-    <div class="section-tag">Simple y directo</div>
-    <h2>Cómo funciona</h2>
-  </div>
-
-  <div class="pasos-grid">
-    <div class="paso">
-      <div class="paso-numero">1</div>
-      <h4>Elige tu canasto</h4>
-      <p>Despensa, Gourmet, Ancheta o Picknick — según tu momento.</p>
+  <div class="como-inner">
+    <div class="sh">
+      <div class="sh-tag">Simple y directo</div>
+      <h2>Cómo funciona</h2>
     </div>
-    <div class="paso">
-      <div class="paso-numero">2</div>
-      <h4>Arrastra los productos</h4>
-      <p>Selecciona lo que quieres, ve la historia de cada uno.</p>
+    <div class="pasos">
+      <div class="paso">
+        <div class="paso-n">1</div>
+        <h4>Elige tu canasto</h4>
+        <p>Despensa, Gourmet, Ancheta, Picknick o Artesanías — según tu momento.</p>
+      </div>
+      <div class="paso">
+        <div class="paso-n">2</div>
+        <h4>Selecciona productos</h4>
+        <p>Lee la historia de cada productor y elige lo que más te guste.</p>
+      </div>
+      <div class="paso">
+        <div class="paso-n">3</div>
+        <h4>Paga seguro</h4>
+        <p>PSE, Nequi, Daviplata o tarjeta. 100% seguro.</p>
+      </div>
+      <div class="paso">
+        <div class="paso-n">4</div>
+        <h4>Recibe y disfruta</h4>
+        <p>A domicilio en Pereira o recoge en el punto de encuentro.</p>
+      </div>
     </div>
-    <div class="paso">
-      <div class="paso-numero">3</div>
-      <h4>Paga seguro</h4>
-      <p>PSE, Nequi, Daviplata o tarjeta. 100% seguro.</p>
-    </div>
-    <div class="paso">
-      <div class="paso-numero">4</div>
-      <h4>Recibe y disfruta</h4>
-      <p>Entrega a domicilio o recoge en el punto de encuentro.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ════ COBERTURA ════ -->
-<section class="nacional-section">
-  <h3>Entregamos en toda Colombia</h3>
-  <p>Comenzando por el Eje Cafetero · Próximamente envíos internacionales</p>
-  <div class="ciudades">
-    <span class="ciudad-tag">Pereira</span>
-    <span class="ciudad-tag">Manizales</span>
-    <span class="ciudad-tag">Armenia</span>
-    <span class="ciudad-tag">Medellín</span>
-    <span class="ciudad-tag">Bogotá</span>
-    <span class="ciudad-tag">Cali</span>
-    <span class="ciudad-tag">+ próximamente</span>
   </div>
 </section>
 
 <!-- ════ MODAL SUSCRIPCIÓN ════ -->
-<div class="modal-overlay {% if modal_abierto %}activo{% endif %}" id="modalSuscripcion">
+<div class="modal-overlay {% if modal_abierto %}activo{% endif %}" id="modalSus">
   <div class="modal">
-    <button class="modal-cerrar" onclick="cerrarModal()">✕</button>
-    <h3>🧺 Suscríbete a La Despensa</h3>
-    <p class="modal-sub">Te traemos tu canasto cada semana. Recogemos el anterior y el tarro de orgánicos.</p>
-
+    <button class="modal-x" onclick="cerrarModal()">✕</button>
+    <h3>🧺 La Despensa Semanal</h3>
+    <p class="msub">Te traemos tu canasto cada semana. Recogemos el anterior y el tarro de orgánicos.</p>
     {% if suscrito %}
-    <div class="banner-exito">
-      ✅ ¡Listo! Te contactaremos pronto para coordinar tu primera entrega.
-    </div>
+    <div class="banner-ok">¡Listo! Te contactaremos pronto para coordinar tu primera entrega.</div>
     {% endif %}
-
     <form method="POST" action="/">
       {% csrf_token %}
       {% for field in form %}
-      <div class="form-grupo">
+      <div class="fg">
         <label for="{{ field.id_for_label }}">{{ field.label }}</label>
         {{ field }}
-        {% if field.errors %}
-          {% for error in field.errors %}
-            <div class="error">{{ error }}</div>
-          {% endfor %}
-        {% endif %}
+        {% for e in field.errors %}<div style="font-family:Arial,sans-serif;font-size:.72rem;color:var(--terracota);margin-top:3px;">{{ e }}</div>{% endfor %}
       </div>
       {% endfor %}
-      <button type="submit" class="btn-enviar">Quiero mi despensa →</button>
+      <button type="submit" class="btn-modal">Quiero mi despensa →</button>
     </form>
   </div>
 </div>
 
 <!-- ════ FOOTER ════ -->
-<footer id="contacto">
-  <div class="footer-logo">dePicknick</div>
-  <p>Del campo al canasto · Pereira, Colombia</p>
+<footer>
+  <div class="fl">dePicknick</div>
+  <p>Del campo al canasto · Pereira de Cosecha · Colombia</p>
   <br>
   <p>
     <a href="mailto:hola@depicknick.com">hola@depicknick.com</a>
-    &nbsp;·&nbsp;
-    <a href="#">Instagram</a>
-    &nbsp;·&nbsp;
-    <a href="#">WhatsApp</a>
+    &nbsp;·&nbsp; <a href="/admin/">Admin</a>
   </p>
   <br>
-  <p style="font-size:11px; opacity:0.5;">© 2026 dePicknick · Todos los derechos reservados</p>
+  <p style="font-size:.72rem;opacity:.45;">© 2026 dePicknick · Todos los derechos reservados</p>
 </footer>
 
 <script>
   function abrirModal() {
-    document.getElementById('modalSuscripcion').classList.add('activo');
+    document.getElementById('modalSus').classList.add('activo');
     document.body.style.overflow = 'hidden';
   }
   function cerrarModal() {
-    document.getElementById('modalSuscripcion').classList.remove('activo');
+    document.getElementById('modalSus').classList.remove('activo');
     document.body.style.overflow = '';
   }
-  document.getElementById('modalSuscripcion').addEventListener('click', function(e) {
+  document.getElementById('modalSus').addEventListener('click', function(e) {
     if (e.target === this) cerrarModal();
   });
-  {% if modal_abierto or suscrito %}
-  abrirModal();
-  {% endif %}
+  {% if modal_abierto or suscrito %}abrirModal();{% endif %}
 </script>
 </body>
 </html>
