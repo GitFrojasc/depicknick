@@ -275,6 +275,7 @@ def pago_exito(request):
 
     request.session['carrito'] = {}
     _enviar_confirmacion_pedido(pedido)
+    _notificar_admin_pedido(pedido)
 
     return render(request, 'confirmacion.html', {
         'pedido': pedido,
@@ -299,6 +300,30 @@ def _whatsapp_url(pedido):
         return None
     msg = quote(f'Hola dePicknick 🧺 Acabo de pagar mi pedido #{pedido.pk} por ${pedido.total:,.0f}. ¿Cuándo me lo entregan?')
     return f'https://wa.me/{numero}?text={msg}'
+
+
+def _notificar_admin_pedido(pedido):
+    from django.core.mail import send_mail
+    items_list = '\n'.join(
+        f'- {it.cantidad}x {it.producto.nombre}: ${it.subtotal:,.0f}'
+        for it in pedido.items.select_related('producto').all()
+    )
+    send_mail(
+        subject=f'[dePicknick] Nuevo pedido #{pedido.pk} — ${pedido.total:,.0f}',
+        message=(
+            f'Nuevo pedido recibido:\n\n'
+            f'Cliente: {pedido.nombre_cliente}\n'
+            f'Email: {pedido.email}\n'
+            f'Teléfono: {pedido.telefono}\n'
+            f'Entrega: {pedido.direccion}, {pedido.ciudad}\n\n'
+            f'{items_list}\n\n'
+            f'Total: ${pedido.total:,.0f}\n\n'
+            f'Ver en admin: /admin/tienda/pedido/{pedido.pk}/change/'
+        ),
+        from_email='dePicknick <onboarding@resend.dev>',
+        recipient_list=[settings.ADMIN_NOTIFY_EMAIL],
+        fail_silently=True,
+    )
 
 
 def _enviar_confirmacion_pedido(pedido):

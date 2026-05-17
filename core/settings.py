@@ -168,6 +168,9 @@ BOLD_API_KEY = os.environ.get('BOLD_API_KEY', '')
 # WhatsApp Business (número sin + ni espacios, ej: 573001234567)
 WHATSAPP_NUMBER = os.environ.get('WHATSAPP_NUMBER', '')
 
+# Email del administrador para notificaciones
+ADMIN_NOTIFY_EMAIL = os.environ.get('ADMIN_NOTIFY_EMAIL', 'francopacho79@gmail.com')
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/'
