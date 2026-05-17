@@ -98,10 +98,11 @@ class Productor(models.Model):
 
 class Categoria(models.Model):
     TIPOS = [
-        ('despensa', 'La Despensa'),
-        ('gourmet',  'Soltero Gourmet'),
-        ('ancheta',  'Ancheta'),
-        ('picknick', 'De Picknick'),
+        ('despensa',    'La Despensa'),
+        ('gourmet',     'Soltero Gourmet'),
+        ('ancheta',     'Ancheta'),
+        ('picknick',    'De Picknick'),
+        ('artesanias',  'Artesanías'),
     ]
     nombre      = models.CharField(max_length=100)
     tipo        = models.CharField(max_length=20, choices=TIPOS)

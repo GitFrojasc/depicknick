@@ -5,137 +5,186 @@ from tienda.models import Mercado, Productor
 PRODUCTORES = [
     {
         'nombre': 'Artenatura Vivero',
-        'categoria': 'Plantas, suculentas, abonos y tierra',
         'telefono': '3145311247',
         'email': '',
         'ubicacion': 'Colinas del Bosque, Dosquebradas',
-        'historia': 'Vivero local especializado en plantas ornamentales, suculentas, abonos y tierra para jardín.',
+        'historia': (
+            'Vivero artesanal en Dosquebradas especializado en la propagación de plantas ornamentales '
+            'y el diseno de espacios verdes. Ofrecen gran variedad de suculentas, cactus de coleccion, '
+            'macetas decorativas, tierra abonada y asesoria personalizada para jardines verticales y terrazas. '
+            'En Instagram (@artenatura_vivero10) comparten catalogo de plantas y tips de riego y luz.'
+        ),
         'tipo_acuerdo': 'directo',
     },
     {
-        'nombre': 'Artesanías El Paisita',
-        'categoria': 'Jaulas, artículos de barro, fogones de carbón',
+        'nombre': 'Artesanias El Paisita',
         'telefono': '3137455200',
         'email': '',
         'ubicacion': 'Plaza Minorista La 41, Local 063, Pereira',
-        'historia': 'Artesano local con tradición en productos de barro y madera típicos del Eje Cafetero.',
+        'historia': (
+            'Artesano local con tradicion en productos de barro, madera y carbon tipicos del Eje Cafetero. '
+            'Elabora jaulas, articulos de barro y fogones de carbon artesanales. Punto fijo en la '
+            'Plaza Minorista de Mercado La 41, segundo piso.'
+        ),
         'tipo_acuerdo': 'directo',
     },
     {
-        'nombre': 'Carbón Son y Sazón',
-        'categoria': 'Alimentos y preparaciones',
+        'nombre': 'Carbon Son y Sazon',
         'telefono': '3182138283',
         'email': '',
         'ubicacion': 'Pereira',
-        'historia': 'Emprendimiento gastronómico pereirano con presencia en el mercado campesino.',
+        'historia': (
+            'Emprendimiento gastronomico pereirano enfocado en preparaciones con el toque tradicional '
+            'del ahumado y asado al carbon. Atienden pedidos directos via WhatsApp y comparten platos '
+            'listos y preparaciones en Instagram (@carbonsonysazon).'
+        ),
         'tipo_acuerdo': 'acopio',
     },
     {
         'nombre': 'Makalu Supersazones',
-        'categoria': 'Saborizadores y condimentos',
         'telefono': '',
         'email': '',
         'ubicacion': 'Pereira',
-        'historia': 'Desde 1985 produciendo el auténtico sabor familiar en condimentos y saborizadores artesanales.',
+        'historia': (
+            'Desde 1985 produciendo el autentico sabor familiar en condimentos y saborizadores artesanales. '
+            'Casi 40 anos de tradicion pereirana en la cocina colombiana.'
+        ),
         'tipo_acuerdo': 'acopio',
     },
     {
-        'nombre': 'Gourmet Lab by Pauli Londoño',
-        'categoria': 'Conservas artesanales y talleres de cocina',
+        'nombre': 'Gourmet Lab by Pauli Londono',
         'telefono': '3127914638',
         'email': 'gourmetlabpaulilondono@gmail.com',
         'ubicacion': 'Pereira',
-        'historia': 'Conservas artesanales elaboradas con productos locales del Eje Cafetero. También ofrece talleres de cocina y catas de café.',
+        'historia': (
+            'Taller creativo de cocina y marca de conservacion artesanal fundada por Pauli Londono en Pereira. '
+            'Su enfoque va mas alla del producto: educan a traves de talleres privados, experiencias culinarias '
+            'y asesorias gastronomicas. Productos destacados: mermeladas con especias, encurtidos gourmet, '
+            'salsas artesanales y conservas vegetales disenadas para tablas de quesos y maridajes. '
+            'Instagram: @gourmet.lab_xpauli'
+        ),
         'tipo_acuerdo': 'directo',
     },
     {
-        'nombre': 'Achiras Huilenses — Las Auténticas',
-        'categoria': 'Harina de sagú, achiras y pasabocas tradicionales',
+        'nombre': 'Achiras Huilenses Las Autenticas',
         'telefono': '',
         'email': '',
         'ubicacion': 'Pereira',
-        'historia': 'Achiras y pasabocas tradicionales elaborados con harina de sagú puro. Receta ancestral huilense con propiedades benéficas.',
+        'historia': (
+            'Achiras y pasabocas tradicionales elaborados con harina de sagu puro. '
+            'Receta ancestral huilense con propiedades benéficas documentadas. '
+            'Una de las pocas marcas que mantiene la autenticidad del proceso artesanal.'
+        ),
         'tipo_acuerdo': 'acopio',
     },
     {
-        'nombre': 'Panadería Artesanal Masa Madre',
-        'categoria': 'Panes con masa madre natural y fermentación lenta',
+        'nombre': 'Panaderia Artesanal Masa Madre',
         'telefono': '3194995331',
         'email': '',
         'ubicacion': 'Pereira',
-        'historia': 'Panadería artesanal que trabaja con masa madre natural y fermentación lenta, usando ingredientes directos del campo.',
+        'historia': (
+            'Panaderia artesanal que trabaja exclusivamente con masa madre natural y fermentacion lenta, '
+            'usando ingredientes directos del campo. Cada pan es un proceso de al menos 24 horas. '
+            'Atiende pedidos anticipados.'
+        ),
         'tipo_acuerdo': 'acopio',
     },
     {
-        'nombre': 'Anahí Abonos Orgánicos',
-        'categoria': 'Abonos orgánicos y bioinsumos',
+        'nombre': 'Anahi Abonos Organicos',
         'telefono': '3002930958',
         'email': 'anahisobonosorganicos@gmail.com',
         'ubicacion': 'Pereira',
-        'historia': 'Productora de abonos orgánicos y bioinsumos para agricultura limpia. Apoya la transición agroecológica en el campo pereirano.',
+        'historia': (
+            'Proyecto agroecologico alineado con la sostenibilidad de Risaralda. Fabrican y comercializan '
+            'insumos limpios para el agro y la jardineria urbana: compost de alta calidad, humus de lombriz '
+            'liquida y solida, enraizadores naturales y sustratos para huertos caseros. '
+            'Ofrecen 10% de descuento en sus productos. Instagram: @abonos_anahi'
+        ),
         'tipo_acuerdo': 'directo',
     },
     {
-        'nombre': 'Raíces Vivas',
-        'categoria': 'Tejidos y artesanías',
+        'nombre': 'Raices Vivas',
         'telefono': '3042803056',
         'email': '',
         'ubicacion': 'Pereira',
-        'historia': '"Tejer es sembrar memoria." Artesanías en tejido que preservan las tradiciones culturales del campo colombiano.',
+        'historia': (
+            '"Tejer es sembrar memoria." Marca artesanal que elabora piezas de vestir, accesorios y '
+            'elementos decorativos rescatando tecnicas de tejido tradicional con fibras naturales. '
+            'Cada pieza es unica y lleva historia del campo colombiano. Instagram: @raicesvivasorigen'
+        ),
         'tipo_acuerdo': 'directo',
     },
     {
-        'nombre': 'La Panto — Arte en Hilo',
-        'categoria': 'Arte hecho en hilo',
+        'nombre': 'La Panto Arte en Hilo',
         'telefono': '3137416062',
         'email': '',
         'ubicacion': 'Pereira',
-        'historia': 'Artesana especializada en arte hecho en hilo, piezas únicas con técnicas tradicionales del Eje Cafetero.',
+        'historia': (
+            'Arte contemporaneo en hilo: bordados personalizados, ilustraciones textiles y piezas '
+            'decorativas unicas hechas a mano. Cada obra es irrepetible. Instagram: @patpant67'
+        ),
         'tipo_acuerdo': 'directo',
     },
     {
         'nombre': 'Finca Despertar',
-        'categoria': 'Alimentos saludables',
         'telefono': '3188634437',
         'email': '',
         'ubicacion': 'Pereira',
-        'historia': 'Finca agroecológica en Pereira productora de alimentos saludables cultivados con amor y sin agroquímicos.',
+        'historia': (
+            'Marca pereirana dedicada a la alimentacion consciente y saludable. Producen alimentos limpios, '
+            'libres de quimicos agresivos y procesados artesanalmente: frutos secos, harinas alternativas, '
+            'snacks saludables, productos organicos de temporada y alimentos para dietas fitness, veganas '
+            'o libres de gluten. Comunidad activa en Facebook e Instagram (@fincadespertarpereira).'
+        ),
         'tipo_acuerdo': 'ambos',
     },
     {
-        'nombre': 'De La Cuenca Panadería',
-        'categoria': 'Panadería artesanal',
+        'nombre': 'De La Cuenca Panaderia',
         'telefono': '',
         'email': '',
         'ubicacion': 'La Florida, Pereira',
-        'historia': 'Panadería artesanal ubicada en La Florida, corregimiento de Pereira, hecha con amor y con ingredientes locales.',
+        'historia': (
+            'Panaderia artesanal ubicada en La Florida, corregimiento de Pereira. '
+            'Hecha con amor y con ingredientes locales del campo risaraldense.'
+        ),
         'tipo_acuerdo': 'acopio',
     },
     {
         'nombre': 'Antojitos del Eje',
-        'categoria': 'Achiras, torta de cuca, bizcocho de manteca y cuajada',
         'telefono': '3214622512',
         'email': '',
-        'ubicacion': 'Calle 20 N° 5-43 Piso 3, Pereira',
-        'historia': 'Tradición del Eje Cafetero en pasabocas: achiras, torta de cuca y bizcochos de cuajada. Pedidos y domicilios.',
+        'ubicacion': 'Calle 20 N 5-43 Piso 3, Pereira',
+        'historia': (
+            'Tradicion del Eje Cafetero en pasabocas: achiras, torta de cuca y bizcochos de manteca y cuajada. '
+            'Recetas de generaciones, elaboradas artesanalmente. Pedidos y domicilios al 321 462 2512 '
+            'o 314 809 6276.'
+        ),
         'tipo_acuerdo': 'acopio',
     },
     {
-        'nombre': 'Cora Tienda Agroecológica',
-        'categoria': 'Productos agroecológicos — Queso Laguna del Otún',
+        'nombre': 'Cora Tienda Agroecologica',
         'telefono': '3009091246',
         'email': 'corpocora@gmail.com',
         'ubicacion': 'Calle 22 No 5-41, Pereira',
-        'historia': 'Tienda agroecológica con productos directos del campo. Distribuye el famoso Queso artesanal Laguna del Otún, producido en las montañas del Parque Nacional.',
+        'historia': (
+            'Tienda vinculada a redes de comercio justo y mercados campesinos locales. Sirve como puente '
+            'para que pequenos productores de alta montana comercialicen directamente. Productos: cafes de '
+            'origen, miel de abejas pura, hortalizas organicas y derivados lacteos artesanales. '
+            'Producto insignia: el Queso Laguna del Otun, elaborado artesanalmente en las montanas del '
+            'Parque Nacional Natural Los Nevados.'
+        ),
         'tipo_acuerdo': 'ambos',
     },
     {
-        'nombre': 'Colibrí Floristería by Susi',
-        'categoria': 'Flores y arreglos florales',
+        'nombre': 'Colibri Floristeria by Susi',
         'telefono': '3167917246',
         'email': '',
-        'ubicacion': 'C.C. Éxito Ciudad Victoria, Pereira',
-        'historia': 'Floristería artesanal con arreglos únicos elaborados con flores de productores locales de la región cafetera.',
+        'ubicacion': 'C.C. Exito Ciudad Victoria, Pereira',
+        'historia': (
+            'Floristeria artesanal con arreglos unicos elaborados con flores de productores locales '
+            'de la region cafetera. Punto fijo en el Centro Comercial Exito Ciudad Victoria. '
+            'Instagram: @colibribysusi'
+        ),
         'tipo_acuerdo': 'directo',
     },
 ]
@@ -163,30 +212,28 @@ class Command(BaseCommand):
         else:
             self.stdout.write(f'  Mercado ya existia: {mercado}')
 
-        creados, existentes = 0, 0
+        creados, actualizados = 0, 0
         for datos in PRODUCTORES:
             productor, nuevo = Productor.objects.get_or_create(
                 nombre=datos['nombre'],
-                defaults={
-                    'mercado': mercado,
-                    'ubicacion': datos.get('ubicacion', ''),
-                    'historia': datos.get('historia', ''),
-                    'email': datos.get('email', ''),
-                    'telefono': datos.get('telefono', ''),
-                    'tipo_acuerdo': datos.get('tipo_acuerdo', 'acopio'),
-                    'estado_editorial': 'borrador',
-                    'activo': True,
-                }
+                defaults={'mercado': mercado, 'estado_editorial': 'borrador', 'activo': True}
             )
+            productor.mercado = mercado
+            productor.ubicacion = datos.get('ubicacion', '') or productor.ubicacion
+            productor.historia = datos.get('historia', '') or productor.historia
+            productor.email = datos.get('email', '') or productor.email
+            productor.telefono = datos.get('telefono', '') or productor.telefono
+            productor.tipo_acuerdo = datos.get('tipo_acuerdo', 'acopio')
+            productor.save()
             if nuevo:
                 creados += 1
                 self.stdout.write(self.style.SUCCESS(f'  [+] {productor.nombre}'))
             else:
-                existentes += 1
-                self.stdout.write(f'  [-] {productor.nombre} (ya existia)')
+                actualizados += 1
+                self.stdout.write(f'  [~] {productor.nombre} (actualizado)')
 
         self.stdout.write(self.style.SUCCESS(
-            f'\nListo: {creados} productores creados, {existentes} ya existian.'
+            f'\nListo: {creados} creados, {actualizados} actualizados.'
         ))
         self.stdout.write(
             'Siguiente paso: admin > Productores > seleccionar todos > Enviar correo de invitacion'
