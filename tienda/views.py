@@ -1,12 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.conf import settings
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
+from .forms import SuscripcionForm, CheckoutForm, RegistroForm
+from .models import Producto, Pedido, ItemPedido, DireccionEnvio, PerfilCliente
 from urllib.parse import quote
 import stripe
-from .forms import SuscripcionForm, CheckoutForm
-from .models import Producto, Pedido, ItemPedido
 
 
 def _carrito_count(request):
@@ -130,13 +129,13 @@ def registro(request):
     if request.user.is_authenticated:
         return redirect('inicio')
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = RegistroForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
             return redirect('inicio')
     else:
-        form = UserCreationForm()
+        form = RegistroForm()
     return render(request, 'registro.html', {'form': form, 'carrito_count': _carrito_count(request)})
 
 
@@ -149,6 +148,11 @@ def checkout(request):
         from django.contrib import messages
         messages.warning(request, 'El sistema de pagos está en configuración. Contáctanos por WhatsApp.')
         return redirect('ver_carrito')
+
+    user = request.user
+    direcciones_guardadas = (
+        user.direcciones.all() if user.is_authenticated else []
+    )
 
     if request.method == 'POST':
         form = CheckoutForm(request.POST)
@@ -176,13 +180,26 @@ def checkout(request):
             )
             return redirect(session.url)
     else:
-        form = CheckoutForm()
+        initial = {}
+        if user.is_authenticated:
+            telefono = getattr(getattr(user, 'perfil', None), 'telefono', '')
+            initial = {
+                'nombre_cliente': user.get_full_name() or user.username,
+                'email': user.email,
+                'telefono': telefono,
+            }
+            ultima = direcciones_guardadas.first()
+            if ultima:
+                initial['ciudad'] = ultima.ciudad
+                initial['direccion'] = ultima.direccion
+        form = CheckoutForm(initial=initial)
 
     return render(request, 'checkout.html', {
         'form': form,
         'items': items,
         'total': total,
         'carrito_count': _carrito_count(request),
+        'direcciones_guardadas': direcciones_guardadas,
     })
 
 
@@ -216,6 +233,7 @@ def pago_exito(request):
         return redirect('inicio')
 
     pedido = Pedido.objects.create(
+        usuario=request.user if request.user.is_authenticated else None,
         nombre_cliente=checkout_data['nombre_cliente'],
         email=checkout_data['email'],
         telefono=checkout_data['telefono'],
@@ -227,6 +245,22 @@ def pago_exito(request):
         total=total,
         stripe_payment_id=session_id,
     )
+
+    if request.user.is_authenticated:
+        dir_obj = DireccionEnvio.objects.filter(
+            usuario=request.user,
+            ciudad=checkout_data['ciudad'],
+            direccion=checkout_data['direccion'],
+        ).first()
+        if dir_obj:
+            dir_obj.veces_usada += 1
+            dir_obj.save()
+        else:
+            DireccionEnvio.objects.create(
+                usuario=request.user,
+                ciudad=checkout_data['ciudad'],
+                direccion=checkout_data['direccion'],
+            )
 
     for item in items:
         ItemPedido.objects.create(

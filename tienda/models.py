@@ -1,4 +1,29 @@
 from django.db import models
+from django.contrib.auth.models import User
+
+
+class PerfilCliente(models.Model):
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil')
+    telefono = models.CharField(max_length=20, blank=True)
+
+    def __str__(self):
+        return f"Perfil de {self.usuario.get_full_name() or self.usuario.username}"
+
+
+class DireccionEnvio(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='direcciones')
+    ciudad = models.CharField(max_length=100)
+    direccion = models.TextField()
+    veces_usada = models.PositiveIntegerField(default=1)
+    ultima_vez = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.ciudad} — {self.direccion[:50]}"
+
+    class Meta:
+        ordering = ['-ultima_vez']
+        verbose_name = "Dirección de envío"
+        verbose_name_plural = "Direcciones de envío"
 
 
 class Productor(models.Model):
@@ -154,6 +179,7 @@ class Pedido(models.Model):
         ('bold', 'PSE / Nequi / Daviplata (Bold)'),
     ]
 
+    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='pedidos')
     nombre_cliente = models.CharField(max_length=200)
     email = models.EmailField()
     telefono = models.CharField(max_length=20)

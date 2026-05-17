@@ -151,6 +151,46 @@
     font-weight: bold;
     color: #2c2c2c;
   }
+
+  /* ── DIRECCIONES GUARDADAS ── */
+  .dir-titulo {
+    font-family: Arial, sans-serif;
+    font-size: .82rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    color: var(--gris);
+    margin-bottom: .6rem;
+  }
+
+  .dir-lista {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .dir-card {
+    border: 1.5px solid #e0e0e0;
+    border-radius: 10px;
+    padding: .7rem 1rem;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+    font-size: .88rem;
+    color: #444;
+    transition: border-color .2s, background .2s;
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+  }
+  .dir-card:hover { border-color: var(--verde-claro); background: #f6fdf8; }
+  .dir-card.activa { border-color: var(--verde); background: #f0faf4; }
+  .dir-card .dir-ciudad { font-weight: 700; color: var(--verde); min-width: 90px; }
+  .dir-nueva {
+    border: 1.5px dashed #ccc;
+    color: var(--gris);
+  }
+  .dir-nueva:hover { border-color: var(--verde-claro); color: var(--verde); }
 </style>
 {% endblock %}
 
@@ -160,6 +200,25 @@
   <!-- ── FORMULARIO ── -->
   <div class="form-col">
     <h2>¿A dónde lo llevamos?</h2>
+
+    {% if direcciones_guardadas %}
+    <div style="margin-bottom:1.5rem;">
+      <p class="dir-titulo">Mis direcciones</p>
+      <div class="dir-lista">
+        {% for dir in direcciones_guardadas %}
+        <div class="dir-card {% if forloop.first %}activa{% endif %}"
+             onclick="seleccionarDireccion('{{ dir.ciudad }}', {{ dir.direccion|escapejs|safe }})">
+          <span class="dir-ciudad">{{ dir.ciudad }}</span>
+          <span>{{ dir.direccion }}</span>
+        </div>
+        {% endfor %}
+        <div class="dir-nueva dir-card" onclick="nuevaDireccion()">
+          + Usar una dirección diferente
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
     <div class="form-card">
       <form method="POST">
         {% csrf_token %}
@@ -209,6 +268,22 @@
       </form>
     </div>
   </div>
+
+<script>
+function seleccionarDireccion(ciudad, direccion) {
+  document.getElementById('id_ciudad').value = ciudad;
+  document.getElementById('id_direccion').value = direccion;
+  document.querySelectorAll('.dir-card').forEach(c => c.classList.remove('activa'));
+  event.currentTarget.classList.add('activa');
+}
+function nuevaDireccion() {
+  document.getElementById('id_ciudad').value = '';
+  document.getElementById('id_direccion').value = '';
+  document.querySelectorAll('.dir-card').forEach(c => c.classList.remove('activa'));
+  event.currentTarget.classList.add('activa');
+  document.getElementById('id_ciudad').focus();
+}
+</script>
 
   <!-- ── RESUMEN ── -->
   <div class="resumen-col">
