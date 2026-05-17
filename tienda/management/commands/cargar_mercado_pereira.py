@@ -176,6 +176,18 @@ PRODUCTORES = [
         'tipo_acuerdo': 'ambos',
     },
     {
+        'nombre': 'Noa Candles',
+        'telefono': '3113073580',
+        'email': '',
+        'ubicacion': 'Pereira',
+        'historia': (
+            'Emprendimiento artesanal de Claudia Betancur especializado en velas decorativas '
+            'y aromaterapia. Cada pieza es elaborada a mano con materiales de calidad, '
+            'combinando diseño, fragancia y consciencia ambiental.'
+        ),
+        'tipo_acuerdo': 'directo',
+    },
+    {
         'nombre': 'Colibri Floristeria by Susi',
         'telefono': '3167917246',
         'email': '',
