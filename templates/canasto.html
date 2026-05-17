@@ -291,8 +291,18 @@
 
 <nav>
   <a href="/" class="logo">de<span>Picknick</span></a>
-  <div style="display:flex;align-items:center;gap:1.5rem;">
+  <div style="display:flex;align-items:center;gap:1.2rem;">
     <a href="/#canastos" class="nav-volver">← Canastos</a>
+    {% if user.is_authenticated %}
+      <span style="color:rgba(255,255,255,.7);font-size:.83rem;">{{ user.get_short_name|default:user.username }}</span>
+      <form method="POST" action="/logout/" style="margin:0;">
+        {% csrf_token %}
+        <button type="submit" style="background:none;border:none;color:rgba(255,255,255,.65);font-size:.83rem;cursor:pointer;font-family:inherit;padding:0;">Salir</button>
+      </form>
+    {% else %}
+      <a href="/login/" style="color:rgba(255,255,255,.75);font-size:.83rem;text-decoration:none;">Entrar</a>
+      <a href="/registro/" style="background:rgba(255,255,255,.15);color:#fff;padding:.28rem .7rem;border-radius:20px;font-size:.83rem;text-decoration:none;">Registrarse</a>
+    {% endif %}
     <a href="/carrito/" class="nav-carrito">
       🧺 Mi canasto
       {% if carrito_count %}<span class="carrito-badge">{{ carrito_count }}</span>{% endif %}

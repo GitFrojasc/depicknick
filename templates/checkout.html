@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}Datos de entrega — dePicknick{% endblock %}
+
+{% block extra_css %}
+<style>
+  .checkout-page {
+    max-width: 960px;
+    margin: 2.5rem auto;
+    padding: 0 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  @media (max-width: 700px) {
+    .checkout-page { grid-template-columns: 1fr; }
+    .resumen-col { order: -1; }
+  }
+
+  h2 {
+    font-size: 1.6rem;
+    color: var(--verde);
+    margin-bottom: 1.5rem;
+  }
+
+  /* ── FORM ── */
+  .form-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 2px 16px rgba(0,0,0,.06);
+  }
+
+  .campo {
+    margin-bottom: 1.2rem;
+  }
+
+  .campo label {
+    display: block;
+    font-family: Arial, sans-serif;
+    font-size: .85rem;
+    color: var(--gris);
+    margin-bottom: .35rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+
+  .campo input,
+  .campo textarea {
+    width: 100%;
+    padding: .7rem 1rem;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 10px;
+    font-family: Georgia, serif;
+    font-size: .95rem;
+    color: #2c2c2c;
+    background: var(--crema);
+    transition: border-color .2s;
+    resize: vertical;
+  }
+
+  .campo input:focus,
+  .campo textarea:focus {
+    outline: none;
+    border-color: var(--verde-claro);
+  }
+
+  .campo .errorlist {
+    list-style: none;
+    color: var(--terracota);
+    font-family: Arial, sans-serif;
+    font-size: .82rem;
+    margin-top: .3rem;
+  }
+
+  .fila-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  @media (max-width: 500px) {
+    .fila-2 { grid-template-columns: 1fr; }
+  }
+
+  .btn-checkout {
+    width: 100%;
+    background: var(--terracota);
+    color: #fff;
+    border: none;
+    padding: 1rem;
+    border-radius: 30px;
+    font-family: Arial, sans-serif;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: .5rem;
+    transition: background .2s;
+  }
+  .btn-checkout:hover { background: #9b3335; }
+
+  .stripe-note {
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: .8rem;
+    color: var(--gris);
+    margin-top: .8rem;
+  }
+
+  /* ── RESUMEN ── */
+  .resumen-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.6rem;
+    box-shadow: 0 2px 16px rgba(0,0,0,.06);
+    position: sticky;
+    top: 80px;
+  }
+
+  .resumen-card h3 {
+    font-size: 1.1rem;
+    color: var(--verde);
+    margin-bottom: 1rem;
+    padding-bottom: .6rem;
+    border-bottom: 1px solid #eee;
+  }
+
+  .resumen-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: .5rem 0;
+    font-family: Arial, sans-serif;
+    font-size: .88rem;
+    color: #444;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .resumen-item .nombre { flex: 1; }
+  .resumen-item .cant { color: var(--gris); margin: 0 .5rem; }
+  .resumen-item .precio { font-weight: 600; white-space: nowrap; }
+
+  .resumen-total {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 0 .5rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #2c2c2c;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="checkout-page">
+
+  <!-- ── FORMULARIO ── -->
+  <div class="form-col">
+    <h2>¿A dónde lo llevamos?</h2>
+    <div class="form-card">
+      <form method="POST">
+        {% csrf_token %}
+
+        <div class="fila-2">
+          <div class="campo">
+            <label>{{ form.nombre_cliente.label }}</label>
+            {{ form.nombre_cliente }}
+            {{ form.nombre_cliente.errors }}
+          </div>
+          <div class="campo">
+            <label>{{ form.telefono.label }}</label>
+            {{ form.telefono }}
+            {{ form.telefono.errors }}
+          </div>
+        </div>
+
+        <div class="campo">
+          <label>{{ form.email.label }}</label>
+          {{ form.email }}
+          {{ form.email.errors }}
+        </div>
+
+        <div class="fila-2">
+          <div class="campo">
+            <label>{{ form.ciudad.label }}</label>
+            {{ form.ciudad }}
+            {{ form.ciudad.errors }}
+          </div>
+          <div class="campo" style="grid-column: 1 / -1;">
+            <label>{{ form.direccion.label }}</label>
+            {{ form.direccion }}
+            {{ form.direccion.errors }}
+          </div>
+        </div>
+
+        <div class="campo">
+          <label>{{ form.notas.label }}</label>
+          {{ form.notas }}
+          {{ form.notas.errors }}
+        </div>
+
+        <button type="submit" class="btn-checkout">
+          Ir al pago seguro →
+        </button>
+        <p class="stripe-note">🔒 Pago procesado por Stripe — aceptamos todas las tarjetas</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── RESUMEN ── -->
+  <div class="resumen-col">
+    <h2>Tu pedido</h2>
+    <div class="resumen-card">
+      <h3>🧺 Resumen</h3>
+      {% for item in items %}
+      <div class="resumen-item">
+        <span class="nombre">{{ item.producto.nombre }}</span>
+        <span class="cant">× {{ item.cantidad }}</span>
+        <span class="precio">${{ item.subtotal|floatformat:0 }}</span>
+      </div>
+      {% endfor %}
+      <div class="resumen-total">
+        <span>Total</span>
+        <span>${{ total|floatformat:0 }}</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

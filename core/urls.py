@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.contrib.auth import views as auth_views
 from tienda import views
 
 urlpatterns = [
@@ -24,5 +25,11 @@ urlpatterns = [
     path('carrito/', views.ver_carrito, name='ver_carrito'),
     path('carrito/agregar/<int:producto_id>/', views.agregar_al_carrito, name='agregar_carrito'),
     path('carrito/quitar/<int:producto_id>/', views.quitar_del_carrito, name='quitar_carrito'),
+    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('registro/', views.registro, name='registro'),
+    path('checkout/', views.checkout, name='checkout'),
+    path('pago/exito/', views.pago_exito, name='pago_exito'),
+    path('pago/cancelado/', views.pago_cancelado, name='pago_cancelado'),
     path('admin/', admin.site.urls),
 ]

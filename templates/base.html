@@ -137,6 +137,16 @@
     <a href="/canasto/despensa/">La Despensa</a>
     <a href="/canasto/gourmet/">Gourmet</a>
     <a href="/canasto/ancheta/">Anchetas</a>
+    {% if user.is_authenticated %}
+      <span style="color:rgba(255,255,255,.7);font-size:.88rem;">Hola, {{ user.get_short_name|default:user.username }}</span>
+      <form method="POST" action="/logout/" style="margin:0;">
+        {% csrf_token %}
+        <button type="submit" style="background:none;border:none;color:rgba(255,255,255,.75);font-size:.88rem;cursor:pointer;font-family:inherit;padding:0;">Salir</button>
+      </form>
+    {% else %}
+      <a href="/login/" style="font-size:.88rem;">Entrar</a>
+      <a href="/registro/" style="background:rgba(255,255,255,.15);padding:.35rem .85rem;border-radius:20px;font-size:.88rem;">Registrarse</a>
+    {% endif %}
     <a href="/carrito/" class="carrito-btn">
       🧺 Carrito
       {% if carrito_count %}<span class="badge">{{ carrito_count }}</span>{% endif %}

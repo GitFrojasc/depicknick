@@ -136,7 +136,14 @@ STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', '')
 # Bold (Colombia)
 BOLD_API_KEY = os.environ.get('BOLD_API_KEY', '')
 
+# WhatsApp Business (número sin + ni espacios, ej: 573001234567)
+WHATSAPP_NUMBER = os.environ.get('WHATSAPP_NUMBER', '')
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+LOGIN_URL = '/login/'
 
 # Seguridad HTTPS — se activa automáticamente en producción (DEBUG=False)
 if not DEBUG:

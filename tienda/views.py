@@ -1,7 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
-from .forms import SuscripcionForm
-from .models import Producto
+from django.conf import settings
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+from urllib.parse import quote
+import stripe
+from .forms import SuscripcionForm, CheckoutForm
+from .models import Producto, Pedido, ItemPedido
 
 
 def _carrito_count(request):
@@ -119,3 +124,167 @@ def ver_carrito(request):
         'total': total,
         'carrito_count': _carrito_count(request),
     })
+
+
+def registro(request):
+    if request.user.is_authenticated:
+        return redirect('inicio')
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('inicio')
+    else:
+        form = UserCreationForm()
+    return render(request, 'registro.html', {'form': form, 'carrito_count': _carrito_count(request)})
+
+
+def checkout(request):
+    items, total = _carrito_items(request)
+    if not items:
+        return redirect('ver_carrito')
+
+    if not settings.STRIPE_SECRET_KEY:
+        from django.contrib import messages
+        messages.warning(request, 'El sistema de pagos está en configuración. Contáctanos por WhatsApp.')
+        return redirect('ver_carrito')
+
+    if request.method == 'POST':
+        form = CheckoutForm(request.POST)
+        if form.is_valid():
+            request.session['checkout_data'] = form.cleaned_data
+            stripe.api_key = settings.STRIPE_SECRET_KEY
+            line_items = [
+                {
+                    'price_data': {
+                        'currency': 'cop',
+                        'product_data': {'name': item['producto'].nombre},
+                        'unit_amount': int(item['producto'].precio * 100),
+                    },
+                    'quantity': item['cantidad'],
+                }
+                for item in items
+            ]
+            session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items=line_items,
+                mode='payment',
+                customer_email=form.cleaned_data['email'],
+                success_url=request.build_absolute_uri('/pago/exito/') + '?session_id={CHECKOUT_SESSION_ID}',
+                cancel_url=request.build_absolute_uri('/pago/cancelado/'),
+            )
+            return redirect(session.url)
+    else:
+        form = CheckoutForm()
+
+    return render(request, 'checkout.html', {
+        'form': form,
+        'items': items,
+        'total': total,
+        'carrito_count': _carrito_count(request),
+    })
+
+
+def pago_exito(request):
+    session_id = request.GET.get('session_id')
+    if not session_id:
+        return redirect('inicio')
+
+    existing = Pedido.objects.filter(stripe_payment_id=session_id).first()
+    if existing:
+        whatsapp_url = _whatsapp_url(existing)
+        return render(request, 'confirmacion.html', {
+            'pedido': existing,
+            'carrito_count': 0,
+            'whatsapp_url': whatsapp_url,
+        })
+
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    try:
+        stripe_session = stripe.checkout.Session.retrieve(session_id)
+    except stripe.error.StripeError:
+        return redirect('inicio')
+
+    if stripe_session.payment_status != 'paid':
+        return redirect('inicio')
+
+    checkout_data = request.session.pop('checkout_data', {})
+    items, total = _carrito_items(request)
+
+    if not checkout_data or not items:
+        return redirect('inicio')
+
+    pedido = Pedido.objects.create(
+        nombre_cliente=checkout_data['nombre_cliente'],
+        email=checkout_data['email'],
+        telefono=checkout_data['telefono'],
+        ciudad=checkout_data['ciudad'],
+        direccion=checkout_data['direccion'],
+        notas=checkout_data.get('notas', ''),
+        metodo_pago='stripe',
+        estado='pagado',
+        total=total,
+        stripe_payment_id=session_id,
+    )
+
+    for item in items:
+        ItemPedido.objects.create(
+            pedido=pedido,
+            producto=item['producto'],
+            cantidad=item['cantidad'],
+            precio_unitario=item['producto'].precio,
+        )
+        prod = item['producto']
+        prod.stock = max(0, prod.stock - item['cantidad'])
+        prod.save()
+
+    request.session['carrito'] = {}
+    _enviar_confirmacion_pedido(pedido)
+
+    return render(request, 'confirmacion.html', {
+        'pedido': pedido,
+        'carrito_count': 0,
+        'whatsapp_url': _whatsapp_url(pedido),
+    })
+
+
+def pago_cancelado(request):
+    items, total = _carrito_items(request)
+    return render(request, 'carrito.html', {
+        'items': items,
+        'total': total,
+        'carrito_count': _carrito_count(request),
+        'pago_cancelado': True,
+    })
+
+
+def _whatsapp_url(pedido):
+    numero = settings.WHATSAPP_NUMBER
+    if not numero:
+        return None
+    msg = quote(f'Hola dePicknick 🧺 Acabo de pagar mi pedido #{pedido.pk} por ${pedido.total:,.0f}. ¿Cuándo me lo entregan?')
+    return f'https://wa.me/{numero}?text={msg}'
+
+
+def _enviar_confirmacion_pedido(pedido):
+    from django.core.mail import send_mail
+    items_list = '\n'.join(
+        f'- {it.cantidad}x {it.producto.nombre}: ${it.subtotal:,.0f}'
+        for it in pedido.items.select_related('producto').all()
+    )
+    send_mail(
+        subject=f'Pedido #{pedido.pk} confirmado — dePicknick 🧺',
+        message=(
+            f'Hola {pedido.nombre_cliente},\n\n'
+            f'Tu pedido ha sido confirmado. ¡Gracias por apoyar a nuestros productores!\n\n'
+            f'{items_list}\n\n'
+            f'Total: ${pedido.total:,.0f}\n'
+            f'Entrega en: {pedido.direccion}, {pedido.ciudad}\n\n'
+            f'Nos pondremos en contacto contigo para coordinar la entrega.\n\n'
+            f'Equipo dePicknick\nhola@depicknick.com'
+        ),
+        from_email='dePicknick <onboarding@resend.dev>',
+        recipient_list=[pedido.email],
+        fail_silently=True,
+    )

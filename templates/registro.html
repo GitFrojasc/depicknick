@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Crear cuenta — dePicknick{% endblock %}
+
+{% block extra_css %}
+<style>
+  .auth-page {
+    max-width: 420px;
+    margin: 3rem auto;
+    padding: 0 1.5rem 4rem;
+  }
+  .auth-page h1 {
+    font-size: 1.8rem;
+    color: var(--verde);
+    margin-bottom: .4rem;
+    text-align: center;
+  }
+  .auth-page .subtitulo {
+    text-align: center;
+    font-family: Arial, sans-serif;
+    color: var(--gris);
+    font-size: .9rem;
+    margin-bottom: 2rem;
+  }
+  .auth-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 2px 16px rgba(0,0,0,.06);
+  }
+  .campo { margin-bottom: 1.2rem; }
+  .campo label {
+    display: block;
+    font-family: Arial, sans-serif;
+    font-size: .82rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    color: var(--gris);
+    margin-bottom: .35rem;
+  }
+  .campo input {
+    width: 100%;
+    padding: .7rem 1rem;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 10px;
+    font-family: Georgia, serif;
+    font-size: .95rem;
+    background: var(--crema);
+    transition: border-color .2s;
+  }
+  .campo input:focus { outline: none; border-color: var(--verde-claro); }
+  .campo .errorlist {
+    list-style: none;
+    color: var(--terracota);
+    font-family: Arial, sans-serif;
+    font-size: .82rem;
+    margin-top: .3rem;
+  }
+  .campo .helptext {
+    font-family: Arial, sans-serif;
+    font-size: .78rem;
+    color: var(--gris);
+    margin-top: .25rem;
+    display: block;
+  }
+  .btn-auth {
+    width: 100%;
+    background: var(--verde);
+    color: #fff;
+    border: none;
+    padding: .9rem;
+    border-radius: 30px;
+    font-family: Arial, sans-serif;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: .5rem;
+    transition: background .2s;
+  }
+  .btn-auth:hover { background: #235c40; }
+  .auth-link {
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: .88rem;
+    color: var(--gris);
+    margin-top: 1.2rem;
+  }
+  .auth-link a { color: var(--verde-claro); text-decoration: none; }
+  .auth-link a:hover { text-decoration: underline; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <h1>Crear cuenta</h1>
+  <p class="subtitulo">Únete a la comunidad dePicknick 🌿</p>
+
+  <div class="auth-card">
+    <form method="POST">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="campo">
+        <label>{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<span class="helptext">{{ field.help_text }}</span>{% endif %}
+        {{ field.errors }}
+      </div>
+      {% endfor %}
+      <button type="submit" class="btn-auth">Crear cuenta</button>
+    </form>
+  </div>
+
+  <p class="auth-link">¿Ya tienes cuenta? <a href="/login/">Inicia sesión</a></p>
+</div>
+{% endblock %}
